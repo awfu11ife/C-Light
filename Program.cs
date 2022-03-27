@@ -4,20 +4,32 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeWork10
+namespace HomeWork11
 {
     class Program
     {
         static void Main(string[] args)
         {
-            int firstNumber = 5;
-            int lastNumber = 96;
-            int step = 7;
+            Random rand = new Random();
+            int randomNumber;
+            int minNumder = 0;
+            int maxNumber = 101;
+            int firstMultiple = 3;
+            int secondMultiple = 5;
+            int sum = 0;
 
-            for (int i = firstNumber; i <= lastNumber; i+=step)
+            randomNumber = rand.Next(minNumder, maxNumber);
+            Console.WriteLine(randomNumber);
+
+            for (int i = 0; i <= randomNumber; i++)
             {
-                Console.WriteLine(i);
+                if (i % firstMultiple == 0 | i % secondMultiple == 0)
+                {
+                    sum += i;
+                }
             }
+
+            Console.WriteLine(sum);
         }
     }
 }
