@@ -15,7 +15,7 @@ namespace HomeWork9
 
             while (stopWord != usersWord)
             {
-                Console.WriteLine("Программа выполняеся......");
+                Console.WriteLine("Программа выполняется......");
                 Console.WriteLine("Для продолжения нажмите Enter. Если вы вхотите завершить программу, введите 'exit'");
                 usersWord = Console.ReadLine();
             }
