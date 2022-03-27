@@ -10,15 +10,15 @@ namespace HomeWork11
     {
         static void Main(string[] args)
         {
-            Random rand = new Random();
+            Random random = new Random();
             int randomNumber;
-            int minNumder = 0;
+            int minNumber = 0;
             int maxNumber = 101;
             int firstMultiple = 3;
             int secondMultiple = 5;
             int sum = 0;
 
-            randomNumber = rand.Next(minNumder, maxNumber);
+            randomNumber = random.Next(minNumber, maxNumber);
             Console.WriteLine(randomNumber);
 
             for (int i = 0; i <= randomNumber; i++)
