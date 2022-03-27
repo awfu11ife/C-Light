@@ -50,7 +50,7 @@ namespace HomeWork12
                 switch (usersInput)
                 {
                     case 1:
-                        Console.WriteLine("Сколько долларов вы хотите поменять? Текущий курс 1 к 100");
+                        Console.WriteLine($"Сколько долларов вы хотите поменять? За доллар вы можетекупить {rubleToDollar} рублей ");
                         moneyToExchange = Convert.ToInt32(Console.ReadLine());
 
                         if (moneyToExchange <= numberOfDollars)
@@ -65,7 +65,7 @@ namespace HomeWork12
                         break;
 
                     case 2:
-                        Console.WriteLine("Сколько долларов вы хотите поменять? Текущий курс 1.1 к 1");
+                        Console.WriteLine($"Сколько долларов вы хотите поменять? За один доллар вы получите {euroToDollar} евро");
                         moneyToExchange = Convert.ToInt32(Console.ReadLine());
 
                         if (moneyToExchange <= numberOfDollars)
@@ -80,7 +80,7 @@ namespace HomeWork12
                         break;
 
                     case 3:
-                        Console.WriteLine("Сколько рублей вы хотите поменять? Текущий курс 100 к 1");
+                        Console.WriteLine($"Сколько рублей вы хотите поменять? ЗА один рубль вы получите {dollarToRuble} долларов");
                         moneyToExchange = Convert.ToInt32(Console.ReadLine());
 
                         if (moneyToExchange <= numberOfRubles)
@@ -95,7 +95,7 @@ namespace HomeWork12
                         break;
 
                     case 4:
-                        Console.WriteLine("Сколько рублей вы хотите поменять? Текущий курс 110 к 1");
+                        Console.WriteLine($"Сколько рублей вы хотите поменять? За один рубль вы получите {euroToRuble} евро");
                         moneyToExchange = Convert.ToInt32(Console.ReadLine());
 
                         if (moneyToExchange <= numberOfRubles)
@@ -110,7 +110,7 @@ namespace HomeWork12
                         break;
 
                     case 5:
-                        Console.WriteLine("Сколько евро вы хотите поменять? Текущий курс 1 к 1.1" );
+                        Console.WriteLine($"Сколько евро вы хотите поменять? За один евро вы получите {dollarToEuro} долларов" );
                         moneyToExchange = Convert.ToInt32(Console.ReadLine());
 
                         if (moneyToExchange <= numberOfRubles)
@@ -125,7 +125,7 @@ namespace HomeWork12
                         break;
 
                     case 6:
-                        Console.WriteLine("Сколько евро вы хотите поменять? Текущий курс 1 к 110");
+                        Console.WriteLine($"Сколько евро вы хотите поменять? За один евро вы получите {rubleToEuro} рублей");
                         moneyToExchange = Convert.ToInt32(Console.ReadLine());
 
                         if (moneyToExchange <= numberOfRubles)
