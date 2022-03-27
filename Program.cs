@@ -4,20 +4,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeWork9
+namespace HomeWork10
 {
     class Program
     {
         static void Main(string[] args)
         {
-            string stopWord = "exit";
-            string usersWord = "";
+            int firstNumber = 5;
+            int lastNumber = 96;
+            int step = 7;
 
-            while (stopWord != usersWord)
+            for (int i = firstNumber; i <= lastNumber; i+=step)
             {
-                Console.WriteLine("Программа выполняется......");
-                Console.WriteLine("Для продолжения нажмите Enter. Если вы вхотите завершить программу, введите 'exit'");
-                usersWord = Console.ReadLine();
+                Console.WriteLine(i);
             }
         }
     }
