@@ -12,6 +12,7 @@ namespace HomeWork14
         {
             int extraCharactersNumber = 2;
             string usersName;
+            string symbolsString = null;
             char usersSymbol;
 
             Console.WriteLine("Введите своё имя");
@@ -25,18 +26,12 @@ namespace HomeWork14
 
             for (int i = 0; i < usersName.Length + extraCharactersNumber; i++)
             {
-                Console.Write(usersSymbol);
+                symbolsString += usersSymbol;
             }
 
-            Console.WriteLine();
-            Console.Write(usersSymbol + usersName + usersSymbol);
-            Console.WriteLine();
-
-            for (int i = 0; i < usersName.Length + extraCharactersNumber; i++)
-            {
-                Console.Write(usersSymbol);
-            }
-            Console.WriteLine();
+            Console.WriteLine(symbolsString);
+            Console.WriteLine(usersSymbol + usersName + usersSymbol);
+            Console.WriteLine(symbolsString);
         }
     }
 }
