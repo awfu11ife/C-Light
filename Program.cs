@@ -14,16 +14,16 @@ namespace HomeWork13
             string usersName = null;
             string usersPassword = null;
 
-            const string stopWord = "exit";
-            const string setNameCommand = "setname";
-            const string setPasswordCommand = "setpassword";
-            const string writeNameCommand = "writename";
-            const string consoleClearCommand = "consoleclear";
-            const string changeTextColorCommand = "changetextcolor";
+            const string StopWord = "exit";
+            const string SetNameCommand = "setname";
+            const string SetPasswordCommand = "setpassword";
+            const string WriteNameCommand = "writename";
+            const string ConsoleClearCommand = "consoleclear";
+            const string ChangeTextColorCommand = "changetextcolor";
 
             Console.WriteLine("Добро пожаловать\n");
 
-            while (usersInput != stopWord)
+            while (usersInput != StopWord)
             {
                 Console.WriteLine("Вам доступен следующий список команд:\n" +
                     "SetName - установить имя\n" +
@@ -37,19 +37,19 @@ namespace HomeWork13
 
                 switch (usersInput)
                 {
-                    case setNameCommand:
+                    case SetNameCommand:
                         Console.WriteLine("\nВведите ваше имя\n");
                         usersName = Console.ReadLine();
                         Console.WriteLine($"\nДобрый день {usersName}, приятно познакомиться!\n");
                         break;
 
-                    case setPasswordCommand:
+                    case SetPasswordCommand:
                         Console.WriteLine("\nУстановите пароль\n");
                         usersPassword = Console.ReadLine();
                         Console.WriteLine("\nЯ обещаю, что никому его не скажу\n");
                         break;
 
-                    case writeNameCommand:
+                    case WriteNameCommand:
                         if(usersName != null && usersPassword != null)
                         {
                             Console.WriteLine("\nДля вывода имени введите пароль:\n");
@@ -69,11 +69,11 @@ namespace HomeWork13
                         }
                         break;
 
-                    case consoleClearCommand:
+                    case ConsoleClearCommand:
                         Console.Clear();
                         break;
 
-                    case changeTextColorCommand:
+                    case ChangeTextColorCommand:
                         Console.ForegroundColor = ConsoleColor.Green;
                         break;
 
