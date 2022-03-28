@@ -4,141 +4,82 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeWork12
+namespace HomeWork13
 {
     class Program
     {
         static void Main(string[] args)
         {
-            float numberOfDollars;
-            float numberOfEuros;
-            float numberOfRubles;
-            float moneyToExchange;
+            string usersInput = null;
+            string usersName = null;
+            string usersPassword = null;
 
-            float rubleToDollar = 100f;
-            float dollarToRuble = 0.01f;
-            float rubleToEuro = 110f;
-            float euroToRuble = 0.009f;
-            float dollarToEuro = 1.1f;
-            float euroToDollar = 0.9f;
+            const string stopWord = "exit";
+            const string setNameCommand = "setname";
+            const string setPasswordCommand = "setpassword";
+            const string writeNameCommand = "writename";
+            const string consoleClearCommand = "consoleclear";
+            const string changeTextColorCommand = "changetextcolor";
 
-            int stopNumber = 0;
-            int ?usersInput = null;
+            Console.WriteLine("Добро пожаловать\n");
 
-            Console.WriteLine("Добрый день, добро пожаловать в банк 'Закрытие'");
-            Console.WriteLine("Сколько рублей у вас есть?");
-            numberOfRubles = Convert.ToInt32(Console.ReadLine());
-            Console.WriteLine("Сколько долларов у вас есть?");
-            numberOfDollars = Convert.ToInt32(Console.ReadLine());
-            Console.WriteLine("Сколько евро у вас есть?");
-            numberOfEuros = Convert.ToInt32(Console.ReadLine());
-
-            while (stopNumber != usersInput)
+            while (usersInput != stopWord)
             {
-                Console.WriteLine($"\nУ вас на счету - {numberOfDollars} долларов, {numberOfEuros} евро и {numberOfRubles} рублей");
-                Console.WriteLine("Какую валюту вы хотели бы обменять?");
-                Console.WriteLine(
-                    "1-Доллары на рубли \n" +
-                    "2-Доллары на евро \n" +
-                    "3-Рубли на доллары \n" +
-                    "4-Рубли на евро \n" +
-                    "5-Евро на доллары \n" +
-                    "6-Евро на рубли \n" +
-                    "0-выход \n");
-                usersInput = Convert.ToInt32(Console.ReadLine());
+                Console.WriteLine("Вам доступен следующий список команд:\n" +
+                    "SetName - установить имя\n" +
+                    "SetPassword - установить пароль\n" +
+                    "WriteName - вывести имя\n" +
+                    "ConsoleClear - очистить консоль\n" +
+                    "ChangeTextColor изменить цвет текста на зеленый\n" +
+                    "Exit - завершить программу\n");
+                Console.WriteLine("Введите желаемую команду (регистр не влияет)");
+                usersInput = Console.ReadLine().ToLower();
 
                 switch (usersInput)
                 {
-                    case 1:
-                        Console.WriteLine($"Сколько долларов вы хотите поменять? За доллар вы можетекупить {rubleToDollar} рублей ");
-                        moneyToExchange = Convert.ToInt32(Console.ReadLine());
+                    case setNameCommand:
+                        Console.WriteLine("\nВведите ваше имя\n");
+                        usersName = Console.ReadLine();
+                        Console.WriteLine($"\nДобрый день {usersName}, приятно познакомиться!\n");
+                        break;
 
-                        if (moneyToExchange <= numberOfDollars)
+                    case setPasswordCommand:
+                        Console.WriteLine("\nУстановите пароль\n");
+                        usersPassword = Console.ReadLine();
+                        Console.WriteLine("\nЯ обещаю, что никому его не скажу\n");
+                        break;
+
+                    case writeNameCommand:
+                        if(usersName != null && usersPassword != null)
                         {
-                            numberOfDollars -= moneyToExchange;
-                            numberOfRubles += moneyToExchange * rubleToDollar;
+                            Console.WriteLine("\nДля вывода имени введите пароль:\n");
+                            usersInput = Console.ReadLine();
+                            if (usersInput == usersPassword)
+                            {
+                                Console.WriteLine($"\nВас зовут {usersName}\n");
+                            }
+                            else
+                            {
+                                Console.WriteLine("\nПароль введён не верно\n");
+                            }
                         }
                         else
                         {
-                            Console.WriteLine("Извините, но у вас нет столько денег((");
+                            Console.WriteLine("\nДля начала установите имя и пароль\n");
                         }
                         break;
 
-                    case 2:
-                        Console.WriteLine($"Сколько долларов вы хотите поменять? За один доллар вы получите {euroToDollar} евро");
-                        moneyToExchange = Convert.ToInt32(Console.ReadLine());
-
-                        if (moneyToExchange <= numberOfDollars)
-                        {
-                            numberOfDollars -= moneyToExchange;
-                            numberOfEuros += moneyToExchange * euroToDollar;
-                        }
-                        else
-                        {
-                            Console.WriteLine("Извините, но у вас нет столько денег((");
-                        }
+                    case consoleClearCommand:
+                        Console.Clear();
                         break;
 
-                    case 3:
-                        Console.WriteLine($"Сколько рублей вы хотите поменять? ЗА один рубль вы получите {dollarToRuble} долларов");
-                        moneyToExchange = Convert.ToInt32(Console.ReadLine());
-
-                        if (moneyToExchange <= numberOfRubles)
-                        {
-                            numberOfRubles -= moneyToExchange;
-                            numberOfDollars += moneyToExchange * dollarToRuble;
-                        }
-                        else
-                        {
-                            Console.WriteLine("Извините, но у вас нет столько денег((");
-                        }
+                    case changeTextColorCommand:
+                        Console.ForegroundColor = ConsoleColor.Green;
                         break;
 
-                    case 4:
-                        Console.WriteLine($"Сколько рублей вы хотите поменять? За один рубль вы получите {euroToRuble} евро");
-                        moneyToExchange = Convert.ToInt32(Console.ReadLine());
-
-                        if (moneyToExchange <= numberOfRubles)
-                        {
-                            numberOfRubles -= moneyToExchange;
-                            numberOfEuros += moneyToExchange * euroToRuble;
-                        }
-                        else
-                        {
-                            Console.WriteLine("Извините, но у вас нет столько денег((");
-                        }
+                    default:
+                        Console.WriteLine("\nИзвините, я не знаю такой команды. Попробуйте снова\n");
                         break;
-
-                    case 5:
-                        Console.WriteLine($"Сколько евро вы хотите поменять? За один евро вы получите {dollarToEuro} долларов" );
-                        moneyToExchange = Convert.ToInt32(Console.ReadLine());
-
-                        if (moneyToExchange <= numberOfRubles)
-                        {
-                            numberOfEuros -= moneyToExchange;
-                            numberOfDollars += moneyToExchange * dollarToEuro;
-                        }
-                        else
-                        {
-                            Console.WriteLine("Извините, но у вас нет столько денег((");
-                        }
-                        break;
-
-                    case 6:
-                        Console.WriteLine($"Сколько евро вы хотите поменять? За один евро вы получите {rubleToEuro} рублей");
-                        moneyToExchange = Convert.ToInt32(Console.ReadLine());
-
-                        if (moneyToExchange <= numberOfRubles)
-                        {
-                            numberOfEuros -= moneyToExchange;
-                            numberOfRubles += moneyToExchange * rubleToEuro;
-                        }
-                        else
-                        {
-                            Console.WriteLine("Извините, но у вас нет столько денег((");
-                        }
-                        break;
-
                 }
             }
         }
