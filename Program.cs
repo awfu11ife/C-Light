@@ -16,19 +16,20 @@ namespace HomeWork15
             int tryCount = 3;
 
             Console.WriteLine("Тут зашифровано сообщение, для просмотра введите пароль");
-            while (tryCount > 0 ^ userInput == password)
+
+            for (int i = 0; i < tryCount; i++)
             {
                 userInput = Console.ReadLine();
-                
+
                 if (userInput == password)
                 {
                     Console.WriteLine("Доступ разблокирован, ");
                     Console.WriteLine(secretMessage);
+                    break;
                 }
                 else
-                {   
-                    tryCount--;
-                    if (tryCount == 0)
+                {
+                    if (tryCount == i + 1)
                     {
                         Console.WriteLine("Попытки кончились, попробуйте в другой раз");
                     }
@@ -38,6 +39,7 @@ namespace HomeWork15
                     }
                 }
             }
+
         }
     }
 }
