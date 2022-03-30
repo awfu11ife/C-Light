@@ -4,40 +4,28 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeWork16
+namespace HomeWork17
 {
     class Program
     {
         static void Main(string[] args)
         {
+            int number = 2;
+            int currenNumberPower = 2;
+            int currentExponent = 1;
             int randomNumber;
-            int currentNumber;
-            int multiplesNumber = 0;
-            int minValue = 1;
-            int maxValue = 27;
-            int lowerRangeLimit = 100;
-            int upperRangeLimit = 999;
+            int lowerRangeLimit = 2;
+            int upperRangeLimit = 100;
             Random random = new Random();
 
-            randomNumber = random.Next(minValue, maxValue + 1);
-            Console.WriteLine($"Рандомное число - {randomNumber}\n");
+            randomNumber = random.Next(lowerRangeLimit, upperRangeLimit);
 
-            for (int i = lowerRangeLimit; i <= upperRangeLimit; i++)
+            while (currenNumberPower < randomNumber)
             {
-                currentNumber = i;
-
-                while (currentNumber >= 0)
-                {
-                    currentNumber -= randomNumber;
-
-                    if (currentNumber == 0)
-                    {
-                        multiplesNumber++;
-                        Console.WriteLine(i);
-                    }
-                }
+                currenNumberPower = currenNumberPower * number;
+                currentExponent++;
             }
-            Console.WriteLine($"\nВсего кратных чисел - {multiplesNumber}");
+            Console.WriteLine($"Рандомное число - {randomNumber}, Степень - {currentExponent}, Число в степени - {currenNumberPower}");
         }
     }
 }
