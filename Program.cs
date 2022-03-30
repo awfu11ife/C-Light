@@ -4,29 +4,41 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeWork17
+namespace HomeWork18
 {
     class Program
     {
         static void Main(string[] args)
         {
-            int number = 2;
-            int currenNumberPower;
-            int currentExponent = 1;
-            int randomNumber;
-            int lowerRangeLimit = 2;
-            int upperRangeLimit = 100;
-            Random random = new Random();
+            string bracketString = "((())(()))";
+            char firstSymbol;
+            char lastSymbol;
+            int leftBracketCount = 0;
+            int rightBracketCount = 0;
 
-            currenNumberPower = number;
-            randomNumber = random.Next(lowerRangeLimit, upperRangeLimit);
+            firstSymbol = bracketString[0];
+            lastSymbol = bracketString[bracketString.Length - 1];
 
-            while (currenNumberPower < randomNumber)
+            foreach (char bracket in bracketString)
             {
-                currenNumberPower = currenNumberPower * number;
-                currentExponent++;
+                if (bracket == '(')
+                {
+                    leftBracketCount++;
+                }
+                else
+                {
+                    rightBracketCount++;
+                }
             }
-            Console.WriteLine($"Рандомное число - {randomNumber}, Степень - {currentExponent}, Число в степени - {currenNumberPower}");
-        }
+
+            if (leftBracketCount == rightBracketCount && firstSymbol == '(' && lastSymbol == ')')
+            {
+                Console.WriteLine($"Строка корректная, глубина равна {leftBracketCount - 1} ");
+            }
+            else
+            {
+                Console.WriteLine("Строка не корректная");
+            }
+        }   
     }
 }
