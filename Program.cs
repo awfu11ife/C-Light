@@ -11,13 +11,14 @@ namespace HomeWork17
         static void Main(string[] args)
         {
             int number = 2;
-            int currenNumberPower = 2;
+            int currenNumberPower;
             int currentExponent = 1;
             int randomNumber;
             int lowerRangeLimit = 2;
             int upperRangeLimit = 100;
             Random random = new Random();
 
+            currenNumberPower = number;
             randomNumber = random.Next(lowerRangeLimit, upperRangeLimit);
 
             while (currenNumberPower < randomNumber)
