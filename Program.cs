@@ -15,18 +15,22 @@ namespace HomeWork16
             int multiplesNumber = 0;
             int minValue = 1;
             int maxValue = 27;
+            int lowerRangeLimit = 100;
+            int upperRangeLimit = 999;
             Random random = new Random();
 
             randomNumber = random.Next(minValue, maxValue + 1);
             Console.WriteLine($"Рандомное число - {randomNumber}\n");
 
-            for (int i = 100; i < 1000; i++)                        
+            for (int i = lowerRangeLimit; i <= upperRangeLimit; i++)
             {
                 currentNumber = i;
-                while(currentNumber >= 0)
+
+                while (currentNumber >= 0)
                 {
                     currentNumber -= randomNumber;
-                    if(currentNumber == 0)
+
+                    if (currentNumber == 0)
                     {
                         multiplesNumber++;
                         Console.WriteLine(i);
