@@ -4,42 +4,36 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeWork15
+namespace HomeWork16
 {
     class Program
     {
         static void Main(string[] args)
         {
-            string password = "oralcumshot";
-            string secretMessage = "AHHHHHHH YOU ARE BOSS OF THIS GYM";
-            string userInput = null;
-            int tryCount = 3;
+            int randomNumber;
+            int currentNumber;
+            int multiplesNumber = 0;
+            int minValue = 1;
+            int maxValue = 27;
+            Random random = new Random();
 
-            Console.WriteLine("Тут зашифровано сообщение, для просмотра введите пароль");
+            randomNumber = random.Next(minValue, maxValue + 1);
+            Console.WriteLine($"Рандомное число - {randomNumber}\n");
 
-            for (int i = 0; i < tryCount; i++)
+            for (int i = 100; i < 1000; i++)                        
             {
-                userInput = Console.ReadLine();
-
-                if (userInput == password)
+                currentNumber = i;
+                while(currentNumber >= 0)
                 {
-                    Console.WriteLine("Доступ разблокирован, ");
-                    Console.WriteLine(secretMessage);
-                    break;
-                }
-                else
-                {
-                    if (tryCount == i + 1)
+                    currentNumber -= randomNumber;
+                    if(currentNumber == 0)
                     {
-                        Console.WriteLine("Попытки кончились, попробуйте в другой раз");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Пароль неверный, попробуйте ещё раз");
+                        multiplesNumber++;
+                        Console.WriteLine(i);
                     }
                 }
             }
-
+            Console.WriteLine($"\nВсего кратных чисел - {multiplesNumber}");
         }
     }
 }
