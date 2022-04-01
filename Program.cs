@@ -4,41 +4,95 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeWork18
+namespace homework
 {
-    class Program
+    internal class Program
     {
         static void Main(string[] args)
         {
-            string bracketString = "((())(()))";
-            char firstSymbol;
-            char lastSymbol;
+            string bracketString = "(())";
+            string changeBracketStrig;
             int leftBracketCount = 0;
             int rightBracketCount = 0;
+            int baseMaxDepth = 1;
+            int currentMaxDepth = 0;
+            bool isCorrect = true;
 
-            firstSymbol = bracketString[0];
-            lastSymbol = bracketString[bracketString.Length - 1];
+            changeBracketStrig = bracketString;
 
-            foreach (char bracket in bracketString)
+            if (bracketString == "")
+            {
+                isCorrect = false;
+            }
+
+            foreach (char bracket in changeBracketStrig)
             {
                 if (bracket == '(')
                 {
                     leftBracketCount++;
                 }
-                else
+                else if (bracket == ')')
                 {
                     rightBracketCount++;
                 }
             }
 
-            if (leftBracketCount == rightBracketCount && firstSymbol == '(' && lastSymbol == ')')
+            if (leftBracketCount == rightBracketCount)
             {
-                Console.WriteLine($"Строка корректная, глубина равна {leftBracketCount - 1} ");
+                for (int i = 0; i < changeBracketStrig.Length; i++)
+                {
+                    if (changeBracketStrig[i] == ')')
+                    {
+                        isCorrect = false;
+                        break;
+                    }
+                    else
+                    {
+                        changeBracketStrig = changeBracketStrig.Remove(i, 1);
+                        i = -1;
+
+                        for (int j = 0; j < changeBracketStrig.Length; j++)
+                        {
+                            if (changeBracketStrig[j] == ')')
+                            {
+                                changeBracketStrig = changeBracketStrig.Remove(j, 1);
+                                break;
+                            }
+                        }
+                    }
+                }
             }
             else
             {
-                Console.WriteLine("Строка не корректная");
+                isCorrect = false;
             }
-        }   
+
+            if (isCorrect == true)
+            {
+                Console.WriteLine("Корректное скобочное выражение");
+                for (int i = 0; i < bracketString.Length - 1; i++)
+                {
+                    if (bracketString[i] == '(')
+                    {
+                        currentMaxDepth++;
+                    }
+                    else
+                    {
+                        if (baseMaxDepth <= currentMaxDepth)
+                        {
+                            baseMaxDepth = currentMaxDepth;
+                            currentMaxDepth = 0;
+                        }                        
+                    }
+                }
+                Console.WriteLine("Глубина равна " + baseMaxDepth);               
+            }
+
+            else
+            {
+                Console.WriteLine("Некорректное скобочное выражение");
+            }
+
+        }
     }
 }
