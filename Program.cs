@@ -26,8 +26,8 @@ namespace HomeWork19
             int currentPoisinRoundNumber = 1;
             bool canBossAttack = true;
             bool isBossPoisoned = false;
-
             Random random = new Random();
+
             Console.WriteLine("На вашем пути встал сильный босс, скорее в бой!");
 
             while(playerHealth > 0 & bossHealth > 0)
