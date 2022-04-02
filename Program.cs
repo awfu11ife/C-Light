@@ -11,8 +11,6 @@ namespace HomeWork23
         static void Main(string[] args)
         {
             int[] array = new int[0];
-            int[] tempArray;
-            int sum = 0;
             const string ExitCommand = "exit";
             const string SumCommand = "sum";
             string userInput = null;
@@ -29,20 +27,20 @@ namespace HomeWork23
                 switch (userInput)
                 {
                     case SumCommand:
+                        int sum = 0;
                         for (int i = 0; i < array.Length; i++)
                         {
                             sum += array[i];
                         }
 
                         Console.WriteLine($"Сумма равна - {sum}\n");
-                        sum = 0;
                         break;
 
                     case ExitCommand:
                         break;
 
                     default:
-                        tempArray = new int[array.Length + 1];
+                        int[] tempArray = new int[array.Length + 1];
 
                         for (int i = 0; i < array.Length; i++)
                         {
