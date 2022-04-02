@@ -22,6 +22,8 @@ namespace HomeWork19
             int maxPoisingRounds = 5;
             int bossHealth = 300;
             int bossDamage;
+            int maxBossDamage = 40;
+            int minBossDamage = 20;
             int freezeBossHeal = 10;
             int currentPoisinRoundNumber = 1;
             bool canBossAttack = true;
@@ -74,13 +76,14 @@ namespace HomeWork19
                         Console.WriteLine("Вы непрравильно прочитати заклинание! Ход переходит боссу!\n");
                         break;
                 }
+
                 bossHealth -= playerDamage;
                 playerDamage = 0;
                 Console.WriteLine("\nТеперь атакует босс\n");
 
                 if (canBossAttack == true)
                 {
-                    bossDamage = random.Next(20, 40);
+                    bossDamage = random.Next(minBossDamage, maxBossDamage);
                     playerHealth -= bossDamage;
                     Console.WriteLine($"Босс нанёс вам {bossDamage} единиц урона");
                 }
@@ -89,6 +92,7 @@ namespace HomeWork19
                     Console.WriteLine($"Атака не прошла, босс заморожен");
                     canBossAttack = true;
                 }
+
                 if (isBossPoisoned == true && currentPoisinRoundNumber <= 5)
                 {
                     bossHealth -= poisingDamage;
@@ -100,6 +104,7 @@ namespace HomeWork19
                     isBossPoisoned = false;
                 }
             }
+
             if (playerHealth <= 0)
             {
                 Console.WriteLine("\nВы проиграли!");
