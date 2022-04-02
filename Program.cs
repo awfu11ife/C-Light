@@ -4,55 +4,45 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeWork21
+namespace HomeWork22
 {
     class Program
     {
         static void Main(string[] args)
         {
-            int[,] array = new int[10, 10];
-            int currentMaxElement = 0;
-            int maxRandomValue = 101;
-            int minRandomValue = 1;
+            int[] array = new int[30];
+            int sum = 0;
+            int minArrayValue = 1;
+            int maxArrayValue = 10;
             Random random = new Random();
 
-            Console.WriteLine("Массив:");
+            Console.Write("Массив: ");
 
-            for (int i = 0; i < array.GetLength(0); i++)
+            for (int i = 0; i < array.Length - 1; i++)
             {
-                for (int j = 0; j < array.GetLength(1); j++)
-                {
-                    array[i, j] = random.Next(minRandomValue, maxRandomValue);
-                    Console.Write($"{array[i, j]} ");
-                }
-
-                Console.WriteLine();
+                array[i] = random.Next(minArrayValue, maxArrayValue);
+                Console.Write($"{array[i]} ");
             }
 
-            for (int i = 0; i < array.GetLength(0); i++)
+            Console.WriteLine();
+
+            for (int i = 1; i <= array.Length - 2; i++)
             {
-                for (int j = 0; j < array.GetLength(1); j++)
-                {
-                    if (currentMaxElement < array[i, j])
-                        currentMaxElement = array[i, j];
-                }
+                if (array[i] > array[i - 1] && array[i] > array[i + 1])
+                    sum += array[i];
             }
 
-            Console.WriteLine($"\nМаксимальный элемент равен {currentMaxElement}");
-            Console.WriteLine($"\nКонечный массив:");
-
-            for (int i = 0; i < array.GetLength(0); i++)
+            if (array[0] > array[1])
             {
-                for (int j = 0; j < array.GetLength(1); j++)
-                {
-                    if (currentMaxElement == array[i, j])
-                        array[i, j] = 0;
-
-                    Console.Write($"{array[i, j]} ");
-                }
-
-                Console.WriteLine();
+                sum += array[0];
             }
+
+            if (array[array.Length - 1] > array[array.Length - 2])
+            {
+                sum += array[array.Length - 1];
+            }
+
+            Console.WriteLine($"Сумма равна {sum}");
         }
     }
 }
