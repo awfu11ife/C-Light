@@ -4,17 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeWork20
+namespace HomeWork21
 {
     class Program
     {
         static void Main(string[] args)
         {
-            int[,] array = { { 2, 1, 8, 5 }, { 4, 6, 9, 1 }, { 5, 9, 7, 8 } };
-            int stringNumber = 2;
-            int columnNumber = 1;
-            int sum = 0;
-            int product = 1;
+            int[,] array = new int[10, 10];
+            int currentMaxElement = 0;
+            int maxRandomValue = 101;
+            int minRandomValue = 1;
+            Random random = new Random();
 
             Console.WriteLine("Массив:");
 
@@ -22,25 +22,37 @@ namespace HomeWork20
             {
                 for (int j = 0; j < array.GetLength(1); j++)
                 {
+                    array[i, j] = random.Next(minRandomValue, maxRandomValue);
                     Console.Write($"{array[i, j]} ");
                 }
 
                 Console.WriteLine();
             }
 
-            for (int i = 0; i < array.GetLength(1); i++)
+            for (int i = 0; i < array.GetLength(0); i++)
             {
-                sum += array[stringNumber, i];
+                for (int j = 0; j < array.GetLength(1); j++)
+                {
+                    if (currentMaxElement < array[i, j])
+                        currentMaxElement = array[i, j];
+                }
             }
 
-            Console.WriteLine($"Сумма {stringNumber} строки (если считать с 0) равна {sum}");
+            Console.WriteLine($"\nМаксимальный элемент равен {currentMaxElement}");
+            Console.WriteLine($"\nКонечный массив:");
 
             for (int i = 0; i < array.GetLength(0); i++)
             {
-                product = product * array[i, columnNumber];
-            }
+                for (int j = 0; j < array.GetLength(1); j++)
+                {
+                    if (currentMaxElement == array[i, j])
+                        array[i, j] = 0;
 
-            Console.WriteLine($"Произведение {columnNumber} столбца (если считать с 0) равно {product}");
+                    Console.Write($"{array[i, j]} ");
+                }
+
+                Console.WriteLine();
+            }
         }
     }
 }
