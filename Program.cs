@@ -24,6 +24,7 @@ namespace HomeWork20
                 {
                     Console.Write($"{array[i, j]} ");
                 }
+
                 Console.WriteLine();
             }
 
