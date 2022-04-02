@@ -18,7 +18,7 @@ namespace HomeWork22
 
             Console.Write("Массив: ");
 
-            for (int i = 0; i < array.Length - 1; i++)
+            for (int i = 0; i < array.Length; i++)
             {
                 array[i] = random.Next(minArrayValue, maxArrayValue);
                 Console.Write($"{array[i]} ");
@@ -26,7 +26,7 @@ namespace HomeWork22
 
             Console.WriteLine();
 
-            for (int i = 1; i <= array.Length - 2; i++)
+            for (int i = 1; i < array.Length - 1; i++)
             {
                 if (array[i] > array[i - 1] && array[i] > array[i + 1])
                     sum += array[i];
