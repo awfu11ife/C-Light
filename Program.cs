@@ -13,23 +13,30 @@ namespace HomeWork19
             int playerHealth = 100;
             int playerDamage = 0;
             int spellNumber;
+            int fireBallDamage = 20;
+            int fireBallPlayerDamage = 5;
+            int fireRageDamage = 50;
+            int maxFireRageUseHealth = 50;
+            int freezePlayerHeal = 30;
+            int poisingDamage = 10;
+            int maxPoisingRounds = 5;
             int bossHealth = 300;
             int bossDamage;
+            int freezeBossHeal = 10;
             int currentPoisinRoundNumber = 1;
             bool canBossAttack = true;
             bool isBossPoisoned = false;
 
             Random random = new Random();
-
             Console.WriteLine("На вашем пути встал сильный босс, скорее в бой!");
 
             while(playerHealth > 0 & bossHealth > 0)
             {
-                Console.WriteLine("В вашем арссенале есть следующие заклинания:\n" +
-                    "1 - Огненный шар (наносит врагу 20 урона, отнимает у игрока 5 единиц здоровья)\n" +
-                    "2 - Ярость огня (наносит врагу 50 урона, возможно использовать только при уровне здоровья меньше 50)\n" +
-                    "3 - Заморозка (Не даёт боссу наносить урон один ход, позволяет игроку воссановить 30 единиц здоровья, при этом босс востанавливает 10 единиц здоровья)\n" +
-                    "4 - Отгравление (В течении последующих 5 ходов наносит 10 урона врагу)\n");
+                Console.WriteLine($"В вашем арссенале есть следующие заклинания:\n" +
+                    $"1 - Огненный шар (наносит врагу {fireBallDamage} урона, отнимает у игрока {fireBallPlayerDamage} единиц здоровья)\n" +
+                    $"2 - Ярость огня (наносит врагу {fireRageDamage} урона, возможно использовать только при уровне здоровья меньше {maxFireRageUseHealth})\n" +
+                    $"3 - Заморозка (Не даёт боссу наносить урон один ход, позволяет игроку воссановить {freezePlayerHeal} единиц здоровья, при этом босс востанавливает {freezeBossHeal} единиц здоровья)\n" +
+                    $"4 - Отгравление (В течении последующих {maxPoisingRounds} ходов наносит {poisingDamage} урона врагу)\n");
                 Console.WriteLine($"У вас {playerHealth} хп");
                 Console.WriteLine($"У босса {bossHealth} хп");
                 Console.WriteLine("Введите номер желаемого заклинания:");
@@ -38,25 +45,25 @@ namespace HomeWork19
                 switch (spellNumber)
                 {
                     case 1:
-                        playerDamage = 20;
-                        playerHealth -= 5;
+                        playerDamage = fireBallDamage;
+                        playerHealth -= fireBallPlayerDamage;
                         break;
 
                     case 2:
-                        if (playerHealth < 50)
+                        if (playerHealth < maxFireRageUseHealth)
                         {
-                            playerDamage = 50;
+                            playerDamage = fireRageDamage;
                         }
                         else
                         {
-                            Console.WriteLine("Вы ошиблись! Сейсас у вас не меньше 50 хп, ход переходит боссу!\n");
+                            Console.WriteLine($"Вы ошиблись! Сейсас у вас не меньше {maxFireRageUseHealth} хп, ход переходит боссу!\n");
                         }
                         break;
 
                     case 3:
                         canBossAttack = false;
-                        playerHealth += 30;
-                        bossHealth += 10;
+                        playerHealth += freezePlayerHeal;
+                        bossHealth += freezeBossHeal;
                         break;
 
                     case 4:
@@ -84,7 +91,7 @@ namespace HomeWork19
                 }
                 if (isBossPoisoned == true && currentPoisinRoundNumber <= 5)
                 {
-                    bossHealth -= 10;
+                    bossHealth -= poisingDamage;
                     currentPoisinRoundNumber++;
                 }
                 else
@@ -93,7 +100,6 @@ namespace HomeWork19
                     isBossPoisoned = false;
                 }
             }
-
             if (playerHealth <= 0)
             {
                 Console.WriteLine("\nВы проиграли!");
