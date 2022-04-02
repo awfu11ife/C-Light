@@ -16,7 +16,7 @@ namespace HomeWork22
             int maxArrayValue = 10;
             Random random = new Random();
 
-            Console.Write("Массив: ");
+            Console.Write("Массив:   ");
 
             for (int i = 0; i < array.Length; i++)
             {
@@ -25,24 +25,27 @@ namespace HomeWork22
             }
 
             Console.WriteLine();
+            Console.Write("Максимумы:");
+
+            if (array[0] > array[1])
+                Console.Write($"{ array[0]} ");
+            else
+                Console.Write("  ");
 
             for (int i = 1; i < array.Length - 1; i++)
             {
                 if (array[i] > array[i - 1] && array[i] > array[i + 1])
-                    sum += array[i];
-            }
-
-            if (array[0] > array[1])
-            {
-                sum += array[0];
+                    Console.Write($"{array[i]} ");
+                else
+                    Console.Write("  ");
             }
 
             if (array[array.Length - 1] > array[array.Length - 2])
-            {
-                sum += array[array.Length - 1];
-            }
+                Console.Write(array[array.Length - 1]);
+            else
+                Console.Write("  ");
 
-            Console.WriteLine($"Сумма равна {sum}");
+            Console.WriteLine();
         }
     }
 }
