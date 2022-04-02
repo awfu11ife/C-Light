@@ -4,48 +4,56 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeWork22
+namespace HomeWork23
 {
     class Program
     {
         static void Main(string[] args)
         {
-            int[] array = new int[30];
+            int[] array = new int[0];
+            int[] tempArray;
             int sum = 0;
-            int minArrayValue = 1;
-            int maxArrayValue = 10;
-            Random random = new Random();
+            const string ExitCommand = "exit";
+            const string SumCommand = "sum";
+            string userInput = null;
 
-            Console.Write("Массив:   ");
-
-            for (int i = 0; i < array.Length; i++)
+            while(userInput != ExitCommand)
             {
-                array[i] = random.Next(minArrayValue, maxArrayValue);
-                Console.Write($"{array[i]} ");
+                Console.WriteLine($"Вам доступны следующие команды:\n" +
+                    $"Ввести любое число - добавить число в массив\n" +
+                    $"{SumCommand} - суммировать все числа массива\n" +
+                    $"{ExitCommand} - завершить программу\n");
+                Console.WriteLine("Введите желаемую команду");
+                userInput = Console.ReadLine();
+
+                switch (userInput)
+                {
+                    case SumCommand:
+                        for (int i = 0; i < array.Length; i++)
+                        {
+                            sum += array[i];
+                        }
+
+                        Console.WriteLine($"Сумма равна - {sum}\n");
+                        sum = 0;
+                        break;
+
+                    case ExitCommand:
+                        break;
+
+                    default:
+                        tempArray = new int[array.Length + 1];
+
+                        for (int i = 0; i < array.Length; i++)
+                        {
+                            tempArray[i] = array[i];
+                        }
+
+                        tempArray[tempArray.Length - 1] = Convert.ToInt32(userInput);
+                        array = tempArray;
+                        break;
+                }
             }
-
-            Console.WriteLine();
-            Console.Write("Максимумы:");
-
-            if (array[0] > array[1])
-                Console.Write($"{ array[0]} ");
-            else
-                Console.Write("  ");
-
-            for (int i = 1; i < array.Length - 1; i++)
-            {
-                if (array[i] > array[i - 1] && array[i] > array[i + 1])
-                    Console.Write($"{array[i]} ");
-                else
-                    Console.Write("  ");
-            }
-
-            if (array[array.Length - 1] > array[array.Length - 2])
-                Console.Write(array[array.Length - 1]);
-            else
-                Console.Write("  ");
-
-            Console.WriteLine();
         }
     }
 }
