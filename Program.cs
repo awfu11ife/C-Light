@@ -31,12 +31,14 @@ namespace HomeWork20
             {
                 sum += array[stringNumber, i];
             }
+
             Console.WriteLine($"Сумма второй строки (если считать с 0) равна {sum}");
 
             for (int i = 0; i < array.GetLength(0); i++)
             {
                 product = product * array[i, columnNumber];
             }
+
             Console.WriteLine($"Произведение первого столбца (если считать с 0) равно {product}");
         }
     }
