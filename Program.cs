@@ -40,7 +40,6 @@ namespace HomeWork24
                     maxArrayLenght = currentMaxArrayLenght;
                     numberInMaxArray = array[i];
                 }
-
             }
 
             Console.WriteLine($"\nMax Lenght = {maxArrayLenght} Number = {numberInMaxArray}");
