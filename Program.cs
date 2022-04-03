@@ -14,7 +14,6 @@ namespace HomeWork24
             int maxArrayLenght = 1;
             int currentMaxArrayLenght = 1;
             int numberInMaxArray = 0;
-            int lastNumberInArray;
             int maxValue = 3;
             int minValue = 1;
             Random random = new Random();
@@ -24,8 +23,6 @@ namespace HomeWork24
                 array[i] = random.Next(minValue, maxValue);
                 Console.Write($"{array[i]} ");
             }
-
-            lastNumberInArray = array[array.Length - 1];
 
             for (int i = 1; i < array.Length - 1; i++)
             {
