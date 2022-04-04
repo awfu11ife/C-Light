@@ -4,19 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeWork24
+namespace HomeWork25
 {
     class Program
     {
         static void Main(string[] args)
         {
-            int[] array = new int[30];
-            int maxArrayLenght = 1;
-            int currentMaxArrayLenght = 1;
-            int numberInMaxArray = 0;
-            int maxValue = 3;
+            int[] array = new int[15];
+            int maxValue = 10;
             int minValue = 1;
             Random random = new Random();
+
+            Console.Write("Массив: ");
 
             for (int i = 0; i < array.Length; i++)
             {
@@ -24,25 +23,25 @@ namespace HomeWork24
                 Console.Write($"{array[i]} ");
             }
 
-            for (int i = 1; i < array.Length - 1; i++)
+            for (int i = 0; i < array.Length; i++)
             {
-                if (array[i] == array[i - 1])
+                for (int j = 0; j < array.Length - 1; j++)
                 {
-                    currentMaxArrayLenght++;
-                }
-                else
-                {
-                    currentMaxArrayLenght = 1;
-                }
-
-                if (currentMaxArrayLenght >= maxArrayLenght)
-                {
-                    maxArrayLenght = currentMaxArrayLenght;
-                    numberInMaxArray = array[i];
+                    if (array[j] > array[j + 1])
+                    {
+                        int tempNumber = array[j];
+                        array[j] = array[j + 1];
+                        array[j + 1] = tempNumber;
+                    }
                 }
             }
 
-            Console.WriteLine($"\nMax Lenght = {maxArrayLenght} Number = {numberInMaxArray}");
+            Console.Write("\nНовый массив: ");
+
+            foreach (var number in array)
+            {
+                Console.Write($"{number} ");
+            }
         }
     }
 }
