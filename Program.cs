@@ -4,43 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeWork25
+namespace HomeWork26
 {
     class Program
     {
         static void Main(string[] args)
         {
-            int[] array = new int[15];
-            int maxValue = 10;
-            int minValue = 1;
-            Random random = new Random();
+            string sentence = "Практика с методом String.Split()";
+            string[] splitedSentence = sentence.Split();
 
-            Console.Write("Массив: ");
-
-            for (int i = 0; i < array.Length; i++)
+            foreach (var word in splitedSentence)
             {
-                array[i] = random.Next(minValue, maxValue);
-                Console.Write($"{array[i]} ");
-            }
-
-            for (int i = 0; i < array.Length; i++)
-            {
-                for (int j = 0; j < array.Length - 1; j++)
-                {
-                    if (array[j] > array[j + 1])
-                    {
-                        int tempNumber = array[j];
-                        array[j] = array[j + 1];
-                        array[j + 1] = tempNumber;
-                    }
-                }
-            }
-
-            Console.Write("\nНовый массив: ");
-
-            foreach (var number in array)
-            {
-                Console.Write($"{number} ");
+                Console.WriteLine(word);
             }
         }
     }
