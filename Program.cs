@@ -14,17 +14,18 @@ namespace HomeWork30
 
             Console.WriteLine("Здравствуйте!");
 
-            while(!isParsed)
+            while(isParsed == false)
             {
-                Console.WriteLine("Ввести число");
-                isParsed = ParseString(Console.ReadLine());
+                isParsed = ParseString();
             }
         }
 
-        static bool ParseString(string uesrInput)
+        static bool ParseString()
         {
             int number;
 
+            Console.WriteLine("Ввести число");
+            string uesrInput = Console.ReadLine();
             bool success = int.TryParse(uesrInput, out number);
 
             if (success)
