@@ -61,31 +61,24 @@ namespace HomeWork28
 
         static void AddDossiers(ref string[] initials, ref string[] position)
         {
-            string userInput;
-            string[] tempArray = new string[initials.Length + 1];
-
             Console.WriteLine("Введите ФИО работника");
-            userInput = Console.ReadLine();
-
-            for (int i = 0; i < initials.Length; i++)
-            {
-                tempArray[i] = initials[i];
-            }
-
-            tempArray[tempArray.Length - 1] = userInput;
-            initials = tempArray;
-
+            IncreaseArray(ref initials);
             Console.WriteLine("Введите должность");
-            userInput = Console.ReadLine();
-            tempArray = new string[position.Length + 1];
+            IncreaseArray(ref position);
+        }
 
-            for (int i = 0; i < position.Length; i++)
+        static void IncreaseArray(ref string[] array)
+        {
+            string userInput = Console.ReadLine();
+            string[] tempArray = new string[array.Length + 1];
+
+            for (int i = 0; i < array.Length; i++)
             {
-                tempArray[i] = position[i];
+                tempArray[i] = array[i];
             }
 
             tempArray[tempArray.Length - 1] = userInput;
-            position = tempArray;
+            array = tempArray;
         }
 
         static void DisplayAllWorkers(string[] initials, string[] position)
@@ -116,8 +109,8 @@ namespace HomeWork28
                         if (userInput == currentWorker[j])
                         {
                             indexOfWorker = i;
-                            ResizeArray(ref initials, indexOfWorker);
-                            ResizeArray(ref position, indexOfWorker);
+                            ReduseArray(ref initials, indexOfWorker);
+                            ReduseArray(ref position, indexOfWorker);
                         }
                     }
                 }
@@ -128,7 +121,7 @@ namespace HomeWork28
             }
         }
 
-        static void ResizeArray(ref string[] array, int index)
+        static void ReduseArray(ref string[] array, int index)
         {
             string[] tempArray = new string[array.Length - 1];
 
