@@ -11,10 +11,10 @@ namespace HomeWork30
         static void Main(string[] args)
         {
             Console.WriteLine("Здравствуйте!");
-            Console.WriteLine($"Число - {TryGetNumber()}");
+            Console.WriteLine($"Число - {GetNumber()}");
         }
 
-        static int TryGetNumber()
+        static int GetNumber()
         {
             int number = 0;
             bool success = false;
