@@ -4,54 +4,39 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeWork29
+namespace HomeWork30
 {
     class Program
     {
         static void Main(string[] args)
         {
-            int fillPercent = 34;
-            int maxValue = 10;
-            int cursorPositionX = 0;
-            int cursorPositionY = 0;
+            bool isParsed = false;
 
-            Console.WriteLine("Введите положение бара по Х и У");
-            cursorPositionX = Convert.ToInt32(Console.ReadLine());
-            cursorPositionY = Convert.ToInt32(Console.ReadLine());
-            DrawBar(fillPercent, maxValue, ConsoleColor.Red, cursorPositionX, cursorPositionY);
+            Console.WriteLine("Здравствуйте!");
+
+            while(!isParsed)
+            {
+                Console.WriteLine("Ввести число");
+                isParsed = ParseString(Console.ReadLine());
+            }
         }
 
-        static void DrawBar(int fillPercent, int maxValue, ConsoleColor color, int cursorPositionX, int cursorPositionY)
+        static bool ParseString(string uesrInput)
         {
-            const int HundredPercent = 100;
-            ConsoleColor defaultColor = Console.BackgroundColor;
-            string bar = null;
-            float maxValueToChange;
-            char filledSymbol = '#';
-            char emptySymbol = '_';
-            int value;
+            int number;
 
-            maxValueToChange = maxValue;
-            value = Convert.ToInt32((maxValueToChange / HundredPercent) * fillPercent);
+            bool success = int.TryParse(uesrInput, out number);
 
-            for (int i = 0; i < value; i++)
+            if (success)
             {
-                bar += filledSymbol;
+                Console.WriteLine($"Удивительно! У вас получилось ввести число! Это чило {number}");
+            }
+            else
+            {
+                Console.WriteLine("К сожалению, это не число... Попробуйте ещё раз");
             }
 
-            Console.SetCursorPosition(cursorPositionX, cursorPositionY);
-            Console.Write('[');
-            Console.BackgroundColor = color;
-            Console.Write(bar);
-            Console.BackgroundColor = defaultColor;
-            bar = null;
-
-            for (int i = value; i < maxValue; i++)
-            {
-                bar += emptySymbol;
-            }
-
-            Console.Write(bar + "]");
+            return success;
         }
     }
 }
