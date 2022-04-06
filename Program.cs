@@ -10,13 +10,13 @@ namespace HomeWork28
     {
         static void Main(string[] args)
         {
-            string[] initials = new string[0];
-            string[] position = new string[0];
             const string AddDossier = "add";
             const string DisplayAll = "displayall";
             const string Delete = "delete";
             const string Find = "find";
             const string Exit = "exit";
+            string[] initials = new string[0];
+            string[] position = new string[0];
             string userInput = null;
 
             Console.WriteLine("Добро пожалвать в кадровый отдел компании");
@@ -34,36 +34,19 @@ namespace HomeWork28
                 switch (userInput)
                 {
                     case AddDossier:
-                        Console.WriteLine("Введите ФИО работника");
-                        userInput = Console.ReadLine();
-                        AddDossiers(ref initials, userInput);
-                        Console.WriteLine("Ведите должность");
-                        userInput = Console.ReadLine();
-                        AddDossiers(ref position, userInput);
+                        AddDossiers(ref initials, ref position);
                         break;
 
                     case DisplayAll:
                         DisplayAllWorkers(initials, position);
-                        Console.WriteLine();
                         break;
 
                     case Delete:
-                        if (initials.Length > 0)
-                        {
-                            Console.WriteLine("Введите фамлию работника, которого хотите убрать");
-                            userInput = Console.ReadLine();
-                            RemoveWorker(ref initials, ref position, userInput);
-                        }
-                        else
-                        {
-                            Console.WriteLine("У вас пока нет сотрудников");
-                        }
+                        RemoveWorker(ref initials, ref position);
                         break;
 
                     case Find:
-                        Console.WriteLine("Введите фамилию работника, которого хотите найти");
-                        userInput = Console.ReadLine();
-                        FindByName(initials, position, userInput);
+                        FindByName(initials, position);
                         break;
 
                     case Exit:
@@ -76,16 +59,33 @@ namespace HomeWork28
             }
         }
 
-        static void AddDossiers(ref string[] workers, string userInput)
+        static void AddDossiers(ref string[] initials, ref string[] position)
         {
-            string[] tempArray = new string[workers.Length + 1];
+            string userInput;
+            string[] tempArray = new string[initials.Length + 1];
 
-            for (int i = 0; i < workers.Length; i++)
+            Console.WriteLine("Введите ФИО работника");
+            userInput = Console.ReadLine();
+
+            for (int i = 0; i < initials.Length; i++)
             {
-                tempArray[i] = workers[i];
+                tempArray[i] = initials[i];
             }
+
             tempArray[tempArray.Length - 1] = userInput;
-            workers = tempArray;
+            initials = tempArray;
+
+            Console.WriteLine("Введите должность");
+            userInput = Console.ReadLine();
+            tempArray = new string[position.Length + 1];
+
+            for (int i = 0; i < position.Length; i++)
+            {
+                tempArray[i] = position[i];
+            }
+
+            tempArray[tempArray.Length - 1] = userInput;
+            position = tempArray;
         }
 
         static void DisplayAllWorkers(string[] initials, string[] position)
@@ -96,26 +96,36 @@ namespace HomeWork28
             }
         }
 
-        static void RemoveWorker(ref string[] initials, ref string[] position, string userInput)
+        static void RemoveWorker(ref string[] initials, ref string[] position)
         {
             int indexOfWorker = 0;
             string[] currentWorker;
+            string userInput;
 
-            for (int i = 0; i < initials.Length; i++)
+            if (initials.Length > 0)
             {
-                currentWorker = initials[i].Split();
+                Console.WriteLine("Введите фамлию работника, которого хотите убрать");
+                userInput = Console.ReadLine();
 
-                for (int j = 0; j < currentWorker.Length; j++)
+                for (int i = 0; i < initials.Length; i++)
                 {
-                    if (userInput == currentWorker[j])                      
+                    currentWorker = initials[i].Split();
+
+                    for (int j = 0; j < currentWorker.Length; j++)
                     {
-                        indexOfWorker = i;
+                        if (userInput == currentWorker[j])
+                        {
+                            indexOfWorker = i;
+                            ResizeArray(ref initials, indexOfWorker);
+                            ResizeArray(ref position, indexOfWorker);
+                        }
                     }
                 }
             }
-
-            ResizeArray(ref initials, indexOfWorker);
-            ResizeArray(ref position, indexOfWorker);
+            else
+            {
+                Console.WriteLine("Увас пока нет сотрудников");
+            }
         }
 
         static void ResizeArray(ref string[] array, int index)
@@ -131,10 +141,14 @@ namespace HomeWork28
             array = tempArray;
         }
 
-        static void FindByName(string[] initials, string[] position, string userInput)
+        static void FindByName(string[] initials, string[] position)
         {
             int indexOfWorker = 0;
+            string userInput;
             string[] currentWorker;
+
+            Console.WriteLine("Введите фамилию работника, которого хотите найти");
+            userInput = Console.ReadLine();
 
             for (int i = 0; i < initials.Length; i++)
             {
