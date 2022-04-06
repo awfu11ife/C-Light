@@ -10,34 +10,32 @@ namespace HomeWork30
     {
         static void Main(string[] args)
         {
-            bool isParsed = false;
-
             Console.WriteLine("Здравствуйте!");
-
-            while(isParsed == false)
-            {
-                isParsed = ParseString();
-            }
+            Console.WriteLine($"Число - {TryGetNumber()}");
         }
 
-        static bool ParseString()
+        static int TryGetNumber()
         {
-            int number;
+            int number = 0;
+            bool success = false;
 
-            Console.WriteLine("Ввести число");
-            string uesrInput = Console.ReadLine();
-            bool success = int.TryParse(uesrInput, out number);
-
-            if (success)
+            while (success == false)
             {
-                Console.WriteLine($"Удивительно! У вас получилось ввести число! Это чило {number}");
-            }
-            else
-            {
-                Console.WriteLine("К сожалению, это не число... Попробуйте ещё раз");
+                Console.WriteLine("Введите число");
+                string uesrInput = Console.ReadLine();
+                success = int.TryParse(uesrInput, out number);
+
+                if (success == false)
+                {
+                    Console.WriteLine("К сожалению, это не число... Попробуйте ещё раз");
+                }
+                else
+                {
+                    Console.WriteLine("Удивительно! У вас получилось ввести число!");
+                }
             }
 
-            return success;
+            return number;
         }
     }
 }
