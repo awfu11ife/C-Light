@@ -10,19 +10,20 @@ namespace HomeWork29
     {
         static void Main(string[] args)
         {
-            float fillPercent = 34;
+            int fillPercent = 34;
             int maxValue = 10;
-            int cursorPosX = 0;
-            int cursorPosY = 0;
+            int cursorPositionX = 0;
+            int cursorPositionY = 0;
 
             Console.WriteLine("Введите положение бара по Х и У");
-            cursorPosX = Convert.ToInt32(Console.ReadLine());
-            cursorPosY = Convert.ToInt32(Console.ReadLine());
-            DrawBar(fillPercent, maxValue, ConsoleColor.Red, cursorPosX, cursorPosY);
+            cursorPositionX = Convert.ToInt32(Console.ReadLine());
+            cursorPositionY = Convert.ToInt32(Console.ReadLine());
+            DrawBar(fillPercent, maxValue, ConsoleColor.Red, cursorPositionX, cursorPositionY);
         }
 
-        static void DrawBar(float fillPercent, int maxValue, ConsoleColor color, int cursorPosX, int cursorPosY)
+        static void DrawBar(int fillPercent, int maxValue, ConsoleColor color, int cursorPositionX, int cursorPositionY)
         {
+            const int HundredPercent = 100;
             ConsoleColor defaultColor = Console.BackgroundColor;
             string bar = null;
             float maxValueToChange;
@@ -31,14 +32,14 @@ namespace HomeWork29
             int value;
 
             maxValueToChange = maxValue;
-            value = Convert.ToInt32((maxValueToChange / 100) * fillPercent);
+            value = Convert.ToInt32((maxValueToChange / HundredPercent) * fillPercent);
 
             for (int i = 0; i < value; i++)
             {
                 bar += filledSymbol;
             }
 
-            Console.SetCursorPosition(cursorPosX, cursorPosY);
+            Console.SetCursorPosition(cursorPositionX, cursorPositionY);
             Console.Write('[');
             Console.BackgroundColor = color;
             Console.Write(bar);
