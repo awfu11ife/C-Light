@@ -12,7 +12,7 @@ namespace HomeWork32
         {
             int[] numbers = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
-            Shuffle(ref numbers);
+            Shuffle(numbers);
 
             for (int i = 0; i < numbers.Length; i++)
             {
@@ -20,7 +20,7 @@ namespace HomeWork32
             }
         }
 
-        static void Shuffle(ref int[] numbers)
+        static void Shuffle(int[] numbers)
         {
             Random random = new Random();
 
