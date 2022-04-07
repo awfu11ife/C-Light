@@ -4,33 +4,52 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeWork32
+namespace HomeWork33
 {
     class Program
     {
         static void Main(string[] args)
         {
-            int[] numbers = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+            Dictionary<string, string> dictionary = new Dictionary<string, string>();
 
-            Shuffle(numbers);
-
-            for (int i = 0; i < numbers.Length; i++)
-            {
-                Console.Write($"{numbers[i]} ");
-            }
+            FillDictionary(dictionary);
+            Console.WriteLine("Это англо-русский словарь (Для выхода введите exit)");
+            FindInDictionary(dictionary);
         }
 
-        static void Shuffle(int[] numbers)
+        static void FillDictionary(Dictionary<string, string> dictionary)
         {
-            Random random = new Random();
+            dictionary.Add("Array", "Массив");
+            dictionary.Add("Dictionary", "Словарь");
+            dictionary.Add("List", "Лист");
+            dictionary.Add("Stack", "стопка");
+            dictionary.Add("Queue", "Очередь");
+        }
 
-            for (int i = 0; i < numbers.Length; i++)
+        static void FindInDictionary(Dictionary<string, string> dictionary)
+        {
+            const string ExitWord = "exit";
+            string userInput = null;
+
+            while (userInput != ExitWord)
             {
-                int tempNumber = numbers[i];
-                int randomIndex = random.Next(0, numbers.Length);
-                numbers[i] = numbers[randomIndex];
-                numbers[randomIndex] = tempNumber;
+                Console.WriteLine("Введите слово, которое хотите перевести");
+                userInput = Console.ReadLine();
+
+                switch (userInput)
+                {
+                    case ExitWord:
+                        break;
+
+                    default:
+                        if (dictionary.ContainsKey(userInput))
+                            Console.WriteLine($"{userInput} - {dictionary[userInput]}");
+                        else
+                            Console.WriteLine("Мы пока не знаем такого слова");
+                        break;
+                }
             }
         }
     }
 }
+
