@@ -29,25 +29,23 @@ namespace HomeWork31
             int playerPositionY;
             bool isPlaying = true;
 
-            DrawMap(map, player, out playerPositionX, out playerPositionY, finish, out finishPositionX, out finishPositionY);
+            ReadMap(map, player, out playerPositionX, out playerPositionY, finish, out finishPositionX, out finishPositionY);
+            DrawMap(map);
             Move(map, player, finishPositionX, finishPositionY, ref playerPositionX, ref playerPositionY, ref isPlaying);
+
         }
 
-        static void DrawMap(char[,] map, char player, out int playerPositionX, out int playerPositionY, char finish, out int finishPositionX, out int finishPositionY)
+        static void ReadMap(char[,] map, char player, out int playerPositionX, out int playerPositionY, char finish, out int finishPositionX, out int finishPositionY)
         {
             playerPositionX = 0;
             playerPositionY = 0;
             finishPositionX = 0;
             finishPositionY = 0;
 
-            Console.CursorVisible = false;
-
             for (int i = 0; i < map.GetLength(0); i++)
             {
                 for (int j = 0; j < map.GetLength(1); j++)
                 {
-                    Console.Write(map[i, j]);
-
                     if (map[i, j] == player)
                     {
                         playerPositionX = i;
@@ -60,8 +58,50 @@ namespace HomeWork31
                         finishPositionY = j;
                     }
                 }
+            }
+        }
+
+        static void DrawMap(char[,] map)
+        {
+
+            Console.CursorVisible = false;
+
+            for (int i = 0; i < map.GetLength(0); i++)
+            {
+                for (int j = 0; j < map.GetLength(1); j++)
+                {
+                    Console.Write(map[i, j]);
+                }
 
                 Console.WriteLine();
+            }
+        }
+
+        static void ChangeDirection(ref int playerDirectionX, ref int playerDirectionY)
+        {
+            ConsoleKeyInfo pressedKey = Console.ReadKey(true);
+
+            switch (pressedKey.Key)
+            {
+                case ConsoleKey.UpArrow:
+                    playerDirectionX = -1;
+                    playerDirectionY = 0;
+                    break;
+
+                case ConsoleKey.DownArrow:
+                    playerDirectionX = 1;
+                    playerDirectionY = 0;
+                    break;
+
+                case ConsoleKey.LeftArrow:
+                    playerDirectionX = 0;
+                    playerDirectionY = -1;
+                    break;
+
+                case ConsoleKey.RightArrow:
+                    playerDirectionX = 0;
+                    playerDirectionY = 1;
+                    break;
             }
         }
 
@@ -75,30 +115,7 @@ namespace HomeWork31
             {
                 if (Console.KeyAvailable)
                 {
-                    ConsoleKeyInfo pressedKey = Console.ReadKey(true);
-
-                    switch (pressedKey.Key)
-                    {
-                        case ConsoleKey.UpArrow:
-                            playerDirectionX = -1;
-                            playerDirectionY = 0;
-                            break;
-
-                        case ConsoleKey.DownArrow:
-                            playerDirectionX = 1;
-                            playerDirectionY = 0;
-                            break;
-
-                        case ConsoleKey.LeftArrow:
-                            playerDirectionX = 0;
-                            playerDirectionY = -1;
-                            break;
-
-                        case ConsoleKey.RightArrow:
-                            playerDirectionX = 0;
-                            playerDirectionY = 1;
-                            break;
-                    }
+                    ChangeDirection(ref playerDirectionX, ref playerDirectionY);
 
                     if (map[playerPositionX + playerDirectionX, playerPositionY + playerDirectionY] != '#')
                     {
