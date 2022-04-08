@@ -62,11 +62,19 @@ namespace HomeWork36
         {
             Console.WriteLine("Введите ФИО работника");
             string userInputInitials = Console.ReadLine();
-            Console.WriteLine("Введите должность");
-            string userInputPosition = Console.ReadLine();
-            workers.Add(userInputInitials, userInputPosition);
-            Console.Clear();
-            Console.WriteLine("Работник добавлен\n");
+            if (workers.ContainsKey(userInputInitials) == false)
+            {
+                Console.WriteLine("Введите должность");
+                string userInputPosition = Console.ReadLine();
+                workers.Add(userInputInitials, userInputPosition);
+                Console.Clear();
+                Console.WriteLine("Работник добавлен\n");
+            }
+            else
+            {
+                Console.Clear();
+                Console.WriteLine("Такой работник уже есть\n");
+            }
         }
 
         static void DisplayAllWorkers(Dictionary<string, string> workers)
@@ -77,8 +85,9 @@ namespace HomeWork36
             {
                 foreach (var worker in workers)
                 {
-                    Console.WriteLine($"{worker.Key} - {worker.Value}\n");
+                    Console.WriteLine($"{worker.Key} - {worker.Value}");
                 }
+                Console.WriteLine();
             }
             else
             {
@@ -89,34 +98,26 @@ namespace HomeWork36
         {
             if (workers.Count > 0)
             {
-                string[] surnames = null;
-                int startCount = workers.Count;
                 Console.WriteLine("Введите фамилию работника, которого хотите убрать");
                 string userInput = Console.ReadLine();
 
-                foreach (var worker in workers)
+                if (workers.ContainsKey(userInput))
                 {
-                    surnames = worker.Key.Split();
-
-                    if (surnames[0] == userInput)
-                    {
-                        workers.Remove(worker.Key);
-                        Console.WriteLine("Работник удален\n");
-                        break;
-                    }
+                    Console.Clear();
+                    workers.Remove(userInput);
+                    Console.WriteLine("Работник удален\n");
                 }
-
-                if (startCount == workers.Count)
+                else
                 {
-                    Console.WriteLine("Нет такого работника\n");
+                    Console.Clear();
+                    Console.WriteLine("Такого работника нет\n");
                 }
             }
             else
             {
+                Console.Clear();
                 Console.WriteLine("У вас пока нет работников\n");
             }
-
-            Console.Clear();
         }
     }
 }
