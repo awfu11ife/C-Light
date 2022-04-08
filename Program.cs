@@ -4,52 +4,46 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeWork33
+namespace HomeWork34
 {
     class Program
     {
         static void Main(string[] args)
         {
-            Dictionary<string, string> dictionary = new Dictionary<string, string>();
+            Queue<int> purchaseAmount = new Queue<int>();
+            int queueLenght = 5;
+            int revenu = 0;
 
-            FillDictionary(dictionary);
-            Console.WriteLine("Это англо-русский словарь (Для выхода введите exit)");
-            FindInDictionary(dictionary);
+            FillQueue(purchaseAmount, queueLenght);
+            ServeQueue(purchaseAmount, ref revenu);
         }
 
-        static void FillDictionary(Dictionary<string, string> dictionary)
+        static void FillQueue(Queue<int> queue, int queueLenght)
         {
-            dictionary.Add("Array", "Массив");
-            dictionary.Add("Dictionary", "Словарь");
-            dictionary.Add("List", "Лист");
-            dictionary.Add("Stack", "стопка");
-            dictionary.Add("Queue", "Очередь");
-        }
+            Random random = new Random();
+            int maxPurchaseAmount = 200;
+            int minPurchaseAmount = 80;
 
-        static void FindInDictionary(Dictionary<string, string> dictionary)
-        {
-            const string ExitWord = "exit";
-            string userInput = null;
-
-            while (userInput != ExitWord)
+            for (int i = 0; i < queueLenght; i++)
             {
-                Console.WriteLine("Введите слово, которое хотите перевести");
-                userInput = Console.ReadLine();
+                queue.Enqueue(random.Next(minPurchaseAmount, maxPurchaseAmount));
+            }
+        }
 
-                switch (userInput)
-                {
-                    case ExitWord:
-                        break;
+        static void ServeQueue(Queue<int> queue, ref int revenu)
+        {
+            int visitorNumber = 1;
 
-                    default:
-                        if (dictionary.ContainsKey(userInput))
-                            Console.WriteLine($"{userInput} - {dictionary[userInput]}");
-                        else
-                            Console.WriteLine("Мы пока не знаем такого слова");
-                        break;
-                }
+            while (queue.Count > 0)
+            {
+                Console.WriteLine($"Клиент номер {visitorNumber} принес вам {queue.Peek()} золота");
+                revenu += queue.Dequeue();
+                visitorNumber++;
+                Console.ReadKey();
+                Console.Clear();
+                Console.WriteLine($"В очереди осталось {queue.Count} человек");
+                Console.WriteLine($"Текущая выручка - {revenu}");
             }
         }
     }
 }
-
