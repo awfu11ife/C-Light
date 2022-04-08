@@ -4,75 +4,120 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeWork35
+namespace HomeWork36
 {
     class Program
     {
         static void Main(string[] args)
         {
-            List<int> numbersList = new List<int>();
+            Dictionary<string, string> workers = new Dictionary<string, string>();
 
-            MakeChoice(numbersList);
+            RunDictionary(workers);
         }
 
-        static void MakeChoice(List<int> numbersList)
+        static void RunDictionary(Dictionary<string, string> workers)
         {
-            const string ExitCommand = "exit";
-            const string SumCommand = "sum";
+            const string AddDossier = "add";
+            const string DisplayAll = "displayall";
+            const string Delete = "delete";
+            const string Exit = "exit";
             string userInput = null;
 
-            while (userInput != ExitCommand)
+            Console.WriteLine("Добро пожалвать в кадровый отдел компании\n");
+
+            while (userInput != Exit)
             {
-                Console.WriteLine($"Вам доступны следующие команды:\n" +
-                    $"Ввести любое число - добавить число в массив\n" +
-                    $"{SumCommand} - суммировать все числа массива\n" +
-                    $"{ExitCommand} - завершить программу\n");
-                Console.WriteLine("Введите желаемую команду");
+                Console.WriteLine($"Вы можете:\n" +
+                    $"{AddDossier} - добавить досье\n" +
+                    $"{DisplayAll} - вывести все досье\n" +
+                    $"{Delete} - удалить досье\n" +
+                    $"{Exit} - выйти\n");
                 userInput = Console.ReadLine();
-                Console.Clear();
 
                 switch (userInput)
                 {
-                    case SumCommand:
-                        SumNumbersInList(numbersList);
+                    case AddDossier:
+                        AddDossiers(workers);
                         break;
 
-                    case ExitCommand:
+                    case DisplayAll:
+                        DisplayAllWorkers(workers);
+                        break;
+
+                    case Delete:
+                        RemoveWorker(workers);
+                        break;
+
+                    case Exit:
                         break;
 
                     default:
-                        AddNumberToList(numbersList, userInput);
+                        Console.WriteLine("Мы не знаем такой команды");
                         break;
                 }
             }
         }
 
-        static void AddNumberToList(List<int> numbersList, string userInput)
+        static void AddDossiers(Dictionary<string, string> workers)
         {
-            int number;
-            bool success = int.TryParse(userInput, out number);
+            Console.WriteLine("Введите ФИО работника");
+            string userInputInitials = Console.ReadLine();
+            Console.WriteLine("Введите должность");
+            string userInputPosition = Console.ReadLine();
+            workers.Add(userInputInitials, userInputPosition);
+            Console.Clear();
+            Console.WriteLine("Работник добавлен\n");
+        }
 
-            if (success == true)
+        static void DisplayAllWorkers(Dictionary<string, string> workers)
+        {
+            Console.Clear();
+
+            if (workers.Count > 0)
             {
-                numbersList.Add(number);
+                foreach (var worker in workers)
+                {
+                    Console.WriteLine($"{worker.Key} - {worker.Value}\n");
+                }
             }
             else
             {
-                Console.WriteLine("К сожалению это не число");
+                Console.WriteLine("У вас пока нет работников\n");
             }
         }
-
-        static void SumNumbersInList(List<int> numbersList)
+        static void RemoveWorker(Dictionary<string, string> workers)
         {
-            int sum = 0;
-
-            for (int i = 0; i < numbersList.Count; i++)
+            if (workers.Count > 0)
             {
-                sum += numbersList[i];
+                string[] surnames = null;
+                int startCount = workers.Count;
+                Console.WriteLine("Введите фамилию работника, которого хотите убрать");
+                string userInput = Console.ReadLine();
+
+                foreach (var worker in workers)
+                {
+                    surnames = worker.Key.Split();
+
+                    if (surnames[0] == userInput)
+                    {
+                        workers.Remove(worker.Key);
+                        Console.WriteLine("Работник удален\n");
+                        break;
+                    }
+                }
+
+                if (startCount == workers.Count)
+                {
+                    Console.WriteLine("Нет такого работника\n");
+                }
+            }
+            else
+            {
+                Console.WriteLine("У вас пока нет работников\n");
             }
 
-            Console.WriteLine($"Сумма равна - {sum}\n");
-            sum = 0;
+            Console.Clear();
         }
     }
 }
+
