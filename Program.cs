@@ -4,46 +4,75 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeWork34
+namespace HomeWork35
 {
     class Program
     {
         static void Main(string[] args)
         {
-            Queue<int> purchaseAmount = new Queue<int>();
-            int queueLenght = 5;
-            int revenu = 0;
+            List<int> numbersList = new List<int>();
 
-            FillQueue(purchaseAmount, queueLenght);
-            ServeQueue(purchaseAmount, ref revenu);
+            MakeChoice(numbersList);
         }
 
-        static void FillQueue(Queue<int> queue, int queueLenght)
+        static void MakeChoice(List<int> numbersList)
         {
-            Random random = new Random();
-            int maxPurchaseAmount = 200;
-            int minPurchaseAmount = 80;
+            const string ExitCommand = "exit";
+            const string SumCommand = "sum";
+            string userInput = null;
 
-            for (int i = 0; i < queueLenght; i++)
+            while (userInput != ExitCommand)
             {
-                queue.Enqueue(random.Next(minPurchaseAmount, maxPurchaseAmount));
-            }
-        }
-
-        static void ServeQueue(Queue<int> queue, ref int revenu)
-        {
-            int visitorNumber = 1;
-
-            while (queue.Count > 0)
-            {
-                Console.WriteLine($"Клиент номер {visitorNumber} принес вам {queue.Peek()} золота");
-                revenu += queue.Dequeue();
-                visitorNumber++;
-                Console.ReadKey();
+                Console.WriteLine($"Вам доступны следующие команды:\n" +
+                    $"Ввести любое число - добавить число в массив\n" +
+                    $"{SumCommand} - суммировать все числа массива\n" +
+                    $"{ExitCommand} - завершить программу\n");
+                Console.WriteLine("Введите желаемую команду");
+                userInput = Console.ReadLine();
                 Console.Clear();
-                Console.WriteLine($"В очереди осталось {queue.Count} человек");
-                Console.WriteLine($"Текущая выручка - {revenu} золота");
+
+                switch (userInput)
+                {
+                    case SumCommand:
+                        SumNumbersInList(numbersList);
+                        break;
+
+                    case ExitCommand:
+                        break;
+
+                    default:
+                        AddNumberToList(numbersList, userInput);
+                        break;
+                }
             }
+        }
+
+        static void AddNumberToList(List<int> numbersList, string userInput)
+        {
+            int number;
+            bool success = int.TryParse(userInput, out number);
+
+            if (success == true)
+            {
+                numbersList.Add(number);
+            }
+            else
+            {
+                Console.WriteLine("К сожалению это не число");
+            }
+        }
+
+        static void SumNumbersInList(List<int> numbersList)
+        {
+            int sum = 0;
+
+            for (int i = 0; i < numbersList.Count; i++)
+            {
+                sum += numbersList[i];
+            }
+
+            Console.WriteLine($"Сумма равна - {sum}\n");
+            sum = 0;
         }
     }
 }
