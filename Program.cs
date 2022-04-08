@@ -42,7 +42,7 @@ namespace HomeWork34
                 Console.ReadKey();
                 Console.Clear();
                 Console.WriteLine($"В очереди осталось {queue.Count} человек");
-                Console.WriteLine($"Текущая выручка - {revenu}");
+                Console.WriteLine($"Текущая выручка - {revenu} золота");
             }
         }
     }
