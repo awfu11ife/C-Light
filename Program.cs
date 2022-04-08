@@ -62,6 +62,7 @@ namespace HomeWork36
         {
             Console.WriteLine("Введите ФИО работника");
             string userInputInitials = Console.ReadLine();
+
             if (workers.ContainsKey(userInputInitials) == false)
             {
                 Console.WriteLine("Введите должность");
