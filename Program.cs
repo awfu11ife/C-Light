@@ -4,70 +4,36 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeWork37
+namespace HomeWork38
 {
     class Program
     {
         static void Main(string[] args)
         {
-            string[] firstArray = new string[5];
-            string[] secondArray = new string[4];
+            Player player = new Player("Billy", 100, 20, 10);
 
-            FillArray(firstArray);
-            FillArray(secondArray);           
+            player.ShowInfo();
+        }
+    }
 
-            foreach (var item in CreateCollection(firstArray, secondArray))
-            {
-                Console.Write(item);
-            }
+    class Player
+    {
+        private string _name;
+        private int _health;
+        private int _damage;
+        private float _speed;
 
-            Console.WriteLine();
+        public Player(string name, int health, int damage, float speed)
+        {
+            _name = name;
+            _health = health;
+            _damage = damage;
+            _speed = speed;
         }
 
-        static void FillArray(string[] array)
+        public void ShowInfo()
         {
-            int maxValue = 6;
-            int minValue = 0;
-            Random random = new Random();
-
-            Console.Write("Массив - ");
-
-            for (int i = 0; i < array.Length; i++)
-            {
-                array[i] = Convert.ToString(random.Next(minValue, maxValue));
-                Console.Write(array[i]);
-            }
-
-            Console.WriteLine();
-        }
-
-        static List<string> CreateCollection(string[] firstArray, string[] secondArray)
-        {
-            List<string> tempCollection = new List<string>();
-            List<string> collection = new List<string>();
-
-            AddToCollection(collection, secondArray);
-            AddToCollection(collection, firstArray);
-
-            foreach (var item in collection)
-            {
-                if (tempCollection.Contains(item) == false)
-                {
-                    tempCollection.Add(item);
-                }
-            }
-
-            Console.Write("Коллекция - ");
-            collection = tempCollection;            
-            return collection;
-        }
-
-        static void AddToCollection(List<string> collection, string[] array)
-        {
-            for (int i = 0; i < array.Length; i++)
-            {
-                collection.Add(array[i]);
-            }
+            Console.WriteLine($"Имя - {_name}, жизни - {_health}, урон - {_damage}, скорость - {_speed}");
         }
     }
 }
