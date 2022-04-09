@@ -14,8 +14,14 @@ namespace HomeWork37
             string[] secondArray = new string[4];
 
             FillArray(firstArray);
-            FillArray(secondArray);
-            MergeArray(firstArray, secondArray);
+            FillArray(secondArray);           
+
+            foreach (var item in CreateCollection(firstArray, secondArray))
+            {
+                Console.Write(item);
+            }
+
+            Console.WriteLine();
         }
 
         static void FillArray(string[] array)
@@ -35,31 +41,33 @@ namespace HomeWork37
             Console.WriteLine();
         }
 
-        static void MergeArray(string[] firstArray, string[] secondArray)
+        static List<string> CreateCollection(string[] firstArray, string[] secondArray)
         {
-            string[] finalArray = new string[firstArray.Length + secondArray.Length];
-            List<string> tempArray = new List<string>();
+            List<string> tempCollection = new List<string>();
+            List<string> collection = new List<string>();
 
-            firstArray.CopyTo(finalArray, 0);
-            secondArray.CopyTo(finalArray, firstArray.Length);
+            AddToCollection(collection, secondArray);
+            AddToCollection(collection, firstArray);
 
-            foreach (var item in finalArray)
+            foreach (var item in collection)
             {
-                if (tempArray.Contains(item) == false)
+                if (tempCollection.Contains(item) == false)
                 {
-                    tempArray.Add(item);
+                    tempCollection.Add(item);
                 }
             }
 
-            finalArray = tempArray.ToArray();
-            Console.Write("Конечный массив - ");
+            Console.Write("Коллекция - ");
+            collection = tempCollection;            
+            return collection;
+        }
 
-            foreach (var item in finalArray)
+        static void AddToCollection(List<string> collection, string[] array)
+        {
+            for (int i = 0; i < array.Length; i++)
             {
-                Console.Write(item);
+                collection.Add(array[i]);
             }
-
-            Console.WriteLine();
         }
     }
 }
