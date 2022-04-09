@@ -4,122 +4,62 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeWork36
+namespace HomeWork37
 {
     class Program
     {
         static void Main(string[] args)
         {
-            Dictionary<string, string> workers = new Dictionary<string, string>();
+            string[] firstArray = new string[5];
+            string[] secondArray = new string[4];
 
-            RunDictionary(workers);
+            FillArray(firstArray);
+            FillArray(secondArray);
+            MergeArray(firstArray, secondArray);
         }
 
-        static void RunDictionary(Dictionary<string, string> workers)
+        static void FillArray(string[] array)
         {
-            const string AddDossier = "add";
-            const string DisplayAll = "displayall";
-            const string Delete = "delete";
-            const string Exit = "exit";
-            string userInput = null;
+            int maxValue = 6;
+            int minValue = 0;
+            Random random = new Random();
 
-            Console.WriteLine("Добро пожалвать в кадровый отдел компании\n");
+            Console.Write("Массив - ");
 
-            while (userInput != Exit)
+            for (int i = 0; i < array.Length; i++)
             {
-                Console.WriteLine($"Вы можете:\n" +
-                    $"{AddDossier} - добавить досье\n" +
-                    $"{DisplayAll} - вывести все досье\n" +
-                    $"{Delete} - удалить досье\n" +
-                    $"{Exit} - выйти\n");
-                userInput = Console.ReadLine();
-
-                switch (userInput)
-                {
-                    case AddDossier:
-                        AddDossiers(workers);
-                        break;
-
-                    case DisplayAll:
-                        DisplayAllWorkers(workers);
-                        break;
-
-                    case Delete:
-                        RemoveWorker(workers);
-                        break;
-
-                    case Exit:
-                        break;
-
-                    default:
-                        Console.WriteLine("Мы не знаем такой команды");
-                        break;
-                }
+                array[i] = Convert.ToString(random.Next(minValue, maxValue));
+                Console.Write(array[i]);
             }
+
+            Console.WriteLine();
         }
 
-        static void AddDossiers(Dictionary<string, string> workers)
+        static void MergeArray(string[] firstArray, string[] secondArray)
         {
-            Console.WriteLine("Введите ФИО работника");
-            string userInputInitials = Console.ReadLine();
+            string[] finalArray = new string[firstArray.Length + secondArray.Length];
+            List<string> tempArray = new List<string>();
 
-            if (workers.ContainsKey(userInputInitials) == false)
-            {
-                Console.WriteLine("Введите должность");
-                string userInputPosition = Console.ReadLine();
-                workers.Add(userInputInitials, userInputPosition);
-                Console.Clear();
-                Console.WriteLine("Работник добавлен\n");
-            }
-            else
-            {
-                Console.Clear();
-                Console.WriteLine("Такой работник уже есть\n");
-            }
-        }
+            firstArray.CopyTo(finalArray, 0);
+            secondArray.CopyTo(finalArray, firstArray.Length);
 
-        static void DisplayAllWorkers(Dictionary<string, string> workers)
-        {
-            Console.Clear();
-
-            if (workers.Count > 0)
+            foreach (var item in finalArray)
             {
-                foreach (var worker in workers)
+                if (tempArray.Contains(item) == false)
                 {
-                    Console.WriteLine($"{worker.Key} - {worker.Value}");
-                }
-                Console.WriteLine();
-            }
-            else
-            {
-                Console.WriteLine("У вас пока нет работников\n");
-            }
-        }
-        static void RemoveWorker(Dictionary<string, string> workers)
-        {
-            if (workers.Count > 0)
-            {
-                Console.WriteLine("Введите фамилию работника, которого хотите убрать");
-                string userInput = Console.ReadLine();
-
-                if (workers.ContainsKey(userInput))
-                {
-                    Console.Clear();
-                    workers.Remove(userInput);
-                    Console.WriteLine("Работник удален\n");
-                }
-                else
-                {
-                    Console.Clear();
-                    Console.WriteLine("Такого работника нет\n");
+                    tempArray.Add(item);
                 }
             }
-            else
+
+            finalArray = tempArray.ToArray();
+            Console.Write("Конечный массив - ");
+
+            foreach (var item in finalArray)
             {
-                Console.Clear();
-                Console.WriteLine("У вас пока нет работников\n");
+                Console.Write(item);
             }
+
+            Console.WriteLine();
         }
     }
 }
-
