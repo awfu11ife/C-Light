@@ -4,36 +4,43 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeWork38
+namespace HomeWork39
 {
     class Program
     {
         static void Main(string[] args)
         {
-            Player player = new Player("Billy", 100, 20, 10);
+            Player player = new Player('@', 10, 8);
+            Draw draw = new Draw();
 
-            player.ShowInfo();
+            draw.Player(player);
         }
     }
 
     class Player
     {
-        private string _name;
-        private int _health;
-        private int _damage;
-        private float _speed;
+        private char _skin;
+        private int _positionX;
+        private int _positionY;
 
-        public Player(string name, int health, int damage, float speed)
+        public char Skin => _skin;
+        public int PositionX => _positionX;
+        public int PositionY => _positionY;
+        
+        public Player(char skin, int positionX, int positionY)
         {
-            _name = name;
-            _health = health;
-            _damage = damage;
-            _speed = speed;
+            _skin = skin;
+            _positionX = positionX;
+            _positionY = positionY;
         }
+    }
 
-        public void ShowInfo()
+    class Draw
+    {
+        public void Player(Player player)
         {
-            Console.WriteLine($"Имя - {_name}, жизни - {_health}, урон - {_damage}, скорость - {_speed}");
+            Console.SetCursorPosition(player.PositionX, player.PositionY);
+            Console.WriteLine(player.Skin);
         }
     }
 }
