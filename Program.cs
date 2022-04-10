@@ -21,7 +21,6 @@ namespace HomeWork41
 
             CardDeck cardDeck = new CardDeck(new List<Card>());
             Player player = new Player(new List<Card>(0));
-
             cardDeck.CreateDeck();
 
             while (userInput != Exit)
@@ -35,7 +34,7 @@ namespace HomeWork41
                 switch (userInput)
                 {
                     case TakeCard:
-                        player.TakeCard(cardDeck.AllCards);
+                        player.TakeCard(cardDeck);
                         break;
 
                     case ShowCards:
@@ -79,21 +78,9 @@ namespace HomeWork41
             }
         }
 
-        public void TakeCard(List<Card> allCards)
+        public void TakeCard(CardDeck cardDeck)
         {
-            Random random = new Random();
-
-            if (allCards.Count > 0)
-            {
-                Card currentCard = allCards[random.Next(0, allCards.Count)];
-                allCards.Remove(currentCard);
-                _receivedCards.Add(currentCard);
-                Console.WriteLine("Вы взяли карту\n");
-            }
-            else
-            {
-                Console.WriteLine("Вы забрали все карты\n");
-            }
+            _receivedCards.Add(cardDeck.RemoveCard());
         }
 
     }
@@ -108,8 +95,24 @@ namespace HomeWork41
         {
             _allCards = allCards;
         }
+       
+        public Card RemoveCard()
+        {
+            Random random = new Random();
 
-        public List<Card> AllCards => _allCards;
+            if (_allCards.Count > 0)
+            {
+                Card currentCard = _allCards[random.Next(0, _allCards.Count)];
+                _allCards.Remove(currentCard);
+                Console.WriteLine("Вы взяли карту\n");
+                return currentCard;
+            }
+            else
+            {
+                Console.WriteLine("Вы забрали все карты\n");
+                return null;
+            }
+        }
 
         public void CreateDeck()
         {
