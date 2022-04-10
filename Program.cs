@@ -21,6 +21,7 @@ namespace HomeWork41
 
             CardDeck cardDeck = new CardDeck(new List<Card>());
             Player player = new Player(new List<Card>(0));
+
             cardDeck.CreateDeck();
 
             while (userInput != Exit)
