@@ -4,216 +4,137 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeWork40
+namespace HomeWork41
 {
     class Program
     {
         static void Main(string[] args)
         {
-            DataBase dataBase = new DataBase(new List<Player>());
+            StartGame();
+        }
+        static void StartGame()
+        {
+            const string TakeCard = "takecard";
+            const string ShowCards = "showcards";
+            const string Exit = "exit";
+            string userInput = null;
 
-            dataBase.StartWork();
+            CardDeck cardDeck = new CardDeck(new List<Card>());
+            Player player = new Player(new List<Card>(0));
+
+            cardDeck.CreateDeck();
+
+            while (userInput != Exit)
+            {
+                Console.WriteLine($"Вам доступны следующие команды:\n" +
+                    $"{TakeCard} - вять случайную карту\n" +
+                    $"{ShowCards} - показать ваши карты\n" +
+                    $"{Exit} - выйти\n");
+                userInput = Console.ReadLine();
+
+                switch (userInput)
+                {
+                    case TakeCard:
+                        player.TakeCard(cardDeck.AllCards);
+                        break;
+
+                    case ShowCards:
+                        player.ShowCards();
+                        break;
+
+                    case Exit:
+                        break;
+
+                    default:
+                        Console.WriteLine("Такой команды нет");
+                        break;
+                }
+            }
         }
     }
 
     class Player
     {
-        private string _nickname;
-        private int _playerID;
-        private int _level;
-        private bool _isBanned;
+        private List<Card> _receivedCards = new List<Card>();
 
-        public int PlayerID => _playerID;
-
-        public Player(string nickName, int playerID, int level, bool isBanned)
+        public Player(List<Card> recevedCards)
         {
-            _nickname = nickName;
-            _playerID = playerID;
-            _level = level;
-            _isBanned = isBanned;
+            _receivedCards = recevedCards;
         }
 
-        public void ShowInfo()
+        public void ShowCards()
         {
-            Console.WriteLine($"Ник - {_nickname}, ID - {_playerID}, Level - {_level}, Забанен - {_isBanned}");
-        }
 
-        public void Ban()
-        {
-            if (_isBanned == false)
-                _isBanned = true;
-            else
-                Console.WriteLine($"Игрок с ID {_playerID} уже забанен");
-        }
-
-        public void Unban()
-        {
-            if (_isBanned == true)
-                _isBanned = false;
-            else
-                Console.WriteLine("Этот игрок не забанен");
-        }
-    }
-
-    class DataBase
-    {
-        private List<Player> _players;
-
-        public DataBase(List<Player> players)
-        {
-            _players = players;
-        }
-
-        public void StartWork()
-        {
-            const string StopCommand = "stop";
-            const string AddPlayer = "add";
-            const string ShowPlayers = "showall";
-            const string BanPlayer = "ban";
-            const string UnbanPlayer = "unban";
-            const string DeletePlayer = "delete";
-            string userInput = null;
-
-            while (userInput != StopCommand)
+            if (_receivedCards.Count > 0)
             {
-                Console.WriteLine($"Вам доступны следующие команды:\n" +
-                    $"{StopCommand} - остановить работу\n" +
-                    $"{AddPlayer} - добавить игрока\n" +
-                    $"{BanPlayer} - забанить игрока\n" +
-                    $"{UnbanPlayer} - разбанить игрока\n" +
-                    $"{DeletePlayer} - удалить игрока из базы данных\n" +
-                    $"{ShowPlayers} - показать всех игроков\n");
-                userInput = Console.ReadLine();
-
-                switch (userInput)
+                foreach (var card in _receivedCards)
                 {
-                    case StopCommand:
-                        break;
-
-                    case AddPlayer:
-                        AddNewPlayer();
-                        break;
-
-                    case BanPlayer:
-                        this.BanPlayer();
-                        break;
-
-                    case UnbanPlayer:
-                        this.UnbanPlayer();
-                        break;
-
-                    case DeletePlayer:
-                        this.DeletePlayer();
-                        break;
-
-                    case ShowPlayers:
-                        ShowAllPlayers();
-                        break;
-
-                    default:
-                        Console.WriteLine("Я не знаю такой команды");
-                        break;
-                }
-            }
-        }
-        private void AddNewPlayer()
-        {
-            bool isCorrectID = false;
-            int playerID = 0;
-
-            while (isCorrectID == false)
-            {
-                Console.WriteLine("Введите ID");
-                playerID = Convert.ToInt32(Console.ReadLine());
-
-                if (_players.Count > 0)
-                {
-                    foreach (var player in _players)
-                    {
-                        if (player.PlayerID == playerID)
-                        {
-                            Console.WriteLine("Игрок с таким ID уже есть");
-                            break;
-                        }
-                        else
-                        {
-                            isCorrectID = true;
-                        }
-                    }
-                }
-                else
-                {
-                    isCorrectID = true;
-                }
-
-            }
-
-            Console.WriteLine("Введите ник");
-            string nickName = Console.ReadLine();
-            Console.WriteLine("Введите уровень");
-            int level = Convert.ToInt32(Console.ReadLine());
-            bool isBanned = false;
-
-            _players.Add(new Player(nickName, playerID, level, isBanned));
-        }
-
-        private void ShowAllPlayers()
-        {
-            if (_players.Count > 0)
-            {
-                foreach (var player in _players)
-                {
-                    player.ShowInfo();
+                    Console.WriteLine($"{card.Value} {card.Suit} ");
                 }
                 Console.WriteLine();
             }
             else
             {
-                Console.WriteLine("В базе данных пока нет игроков\n");
+                Console.WriteLine("Вы ещё не взяли ни одной карты\n");
             }
         }
 
-        private void BanPlayer()
+        public void TakeCard(List<Card> allCards)
         {
-            Console.WriteLine("Введите ID игрока, которго хотите забанить");
-            int playerID = Convert.ToInt32(Console.ReadLine());
+            Random random = new Random();
 
-            foreach (var player in _players)
+            if (allCards.Count > 0)
             {
-                if (player.PlayerID == playerID)
-                {
-                    player.Ban();
-                }
+                Card currentCard = allCards[random.Next(0, allCards.Count)];
+                allCards.Remove(currentCard);
+                _receivedCards.Add(currentCard);
+                Console.WriteLine("Вы взяли карту\n");
+            }
+            else
+            {
+                Console.WriteLine("Вы забрали все карты\n");
             }
         }
 
-        private void UnbanPlayer()
-        {
-            Console.WriteLine("Введите ID игрока, которго хотите разбанить");
-            int playerID = Convert.ToInt32(Console.ReadLine());
+    }
 
-            foreach (var player in _players)
+    class CardDeck
+    {
+        private List<Card> _allCards;
+        private string[] _values = new string[] { "6", "7", "8", "9", "10", "Валет", "Дама", "Король", "Туз" };
+        private string[] _suits = new string[] { "Пики", "Червы", "Бубны", "Крести" };
+
+        public CardDeck(List<Card> allCards)
+        {
+            _allCards = allCards;
+        }
+
+        public List<Card> AllCards => _allCards;
+
+        public void CreateDeck()
+        {
+            for (int i = 0; i < _suits.Length; i++)
             {
-                if (player.PlayerID == playerID)
+                for (int j = 0; j < _values.Length; j++)
                 {
-                    player.Unban();
+                    _allCards.Add(new Card(_values[j], _suits[i]));
                 }
             }
         }
+    }
 
-        private void DeletePlayer()
+    class Card
+    {
+        private string _value;
+        private string _suit;
+
+        public string Value => _value;
+        public string Suit => _suit;
+
+        public Card(string value, string suit)
         {
-            Console.WriteLine("Введите ID игрока, которго хотите удалить из базы данных");
-            int playerID = Convert.ToInt32(Console.ReadLine());
-
-            foreach (var player in _players)
-            {
-                if (player.PlayerID == playerID)
-                {
-                    _players.Remove(player);
-                    break;
-                }
-            }
+            _value = value;
+            _suit = suit;
         }
     }
 }
