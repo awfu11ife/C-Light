@@ -12,7 +12,7 @@ namespace HomeWork40
         {
             DataBase dataBase = new DataBase(new List<Player>());
 
-            dataBase.StertWork();
+            dataBase.StartWork();
         }
     }
 
@@ -64,7 +64,7 @@ namespace HomeWork40
             _players = players;
         }
 
-        public void StertWork()
+        public void StartWork()
         {
             const string StopCommand = "stop";
             const string AddPlayer = "add";
