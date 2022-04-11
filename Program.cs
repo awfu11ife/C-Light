@@ -4,209 +4,164 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeWork42
+namespace HomeWork43
 {
     class Program
     {
         static void Main(string[] args)
         {
-            BookStorage bookStorage = new BookStorage(new List<Book>(0));
-
-            bookStorage.AccessStorage();
-        }
-    }
-
-    class BookStorage
-    {
-        private List<Book> _allBooks = new List<Book>();
-
-        public BookStorage(List<Book> allBooks)
-        {
-            _allBooks = allBooks;
+            StartBidding();
         }
 
-        public void AccessStorage()
+        static void StartBidding()
         {
-            const string AddBook = "addbook";
-            const string RemoveBook = "removebook";
-            const string ShowAll = "showall";
-            const string FindByTitle = "findbytitle";
-            const string FindByAuthor = "findbyauthor";
-            const string FindByReleaseYear = "findbyyear";
+            Player player = new Player(new List<Product>(0));
+            Dealer dealer = new Dealer(new List<Product> { new Product("Яблоко"), new Product("Зелье восстановления"), new Product("Зелье урона"), new Product("Меч"), new Product("Лук со стрелами") });
+
+            const string ShowPlayerInventory = "showinventory";
+            const string ShowDealerInventory = "showdealerinventory";
+            const string BuyCommand = "buy";
             const string ExitCommand = "exit";
-            string userInput = null;
+            string playerInput = null;
 
-            while (userInput != ExitCommand)
+            Console.WriteLine("Добро пожаловать в волшебную лавку\n");
+
+            while (playerInput != ExitCommand)
             {
-                Console.WriteLine($"Вам доступны следующие команды:\n" +
-                    $"{AddBook} - добавить книгу\n" +
-                    $"{RemoveBook} - убрать книгу\n" +
-                    $"{ShowAll} - показать все книги\n" +
-                    $"{FindByTitle} - найти по названию\n" +
-                    $"{FindByAuthor} - найти по автору\n" +
-                    $"{FindByReleaseYear} - найти по году выпуска\n" +
-                    $"{ExitCommand} - выйти\n");
-                userInput = Console.ReadLine();
+                Console.WriteLine($"Вам доступны следующие команды\n" +
+                    $"{ShowPlayerInventory} - показать ваш инвентарь\n" +
+                    $"{ShowDealerInventory} - показать ассортимент продавца\n" +
+                    $"{BuyCommand} - купить товар\n" +
+                    $"{ExitCommand} - уйти из лавки\n");
+                playerInput = Console.ReadLine();
 
-                switch (userInput)
+                switch (playerInput)
                 {
-                    case AddBook:
-                        this.AddBook();
+                    case ShowPlayerInventory:
+                        player.ShowInventory();
                         break;
 
-                    case RemoveBook:
-                        this.RemoveBook();
+                    case ShowDealerInventory:
+                        dealer.ShowInventory();
                         break;
 
-                    case ShowAll:
-                        this.ShowAll();
-                        break;
-
-                    case FindByTitle:
-                        this.FindByTitle();
-                        break;
-
-                    case FindByAuthor:
-                        this.FindByAuthor();
-                        break;
-
-                    case FindByReleaseYear:
-                        this.FindByReleaseYear();
+                    case BuyCommand:
+                        player.Buy(dealer);
                         break;
 
                     case ExitCommand:
                         break;
 
                     default:
-                        Console.WriteLine("Такой команды нет");
+                        Console.WriteLine("Такой команды нет\n");
                         break;
                 }
             }
+        }
+    }
 
+    class Player
+    {
+        private List<Product> _inventory;
+
+        public Player(List<Product> inventory)
+        {
+            _inventory = inventory;
         }
 
-        private void AddBook()
+        public void Buy(Dealer dealer)
         {
-            Console.WriteLine("Введите название книги");
-            string title = Console.ReadLine();
-            Console.WriteLine("Введите автора");
-            string author = Console.ReadLine();
-            Console.WriteLine("Введите год выпуска");
-            int releaseYear = Convert.ToInt32(Console.ReadLine());
+            Console.WriteLine("Введите название желаемого товара");
+            string playerInput = Console.ReadLine();
+            Product requiredProduct = null;
 
-            _allBooks.Add(new Book(title, author, releaseYear));
-            Console.WriteLine("Книга добавлена\n");
-        }
+            requiredProduct = dealer.Sell(playerInput);
 
-        private void RemoveBook()
-        {
-            if (_allBooks.Count > 0)
+            if (requiredProduct != null)
             {
-                Console.WriteLine("Введите название книги, которую хотите убрать");
-                string title = Console.ReadLine();
+                _inventory.Add(requiredProduct);
+                Console.WriteLine("Сделка прошла успешно\n");
+            }
+        }
 
-                foreach (var book in _allBooks)
+        public void ShowInventory()
+        {
+            if (_inventory.Count > 0)
+            {
+                foreach (var product in _inventory)
                 {
-                    if (book.Title == title)
+                    Console.WriteLine(product.Name);
+                }
+                Console.WriteLine();
+            }
+            else
+            {
+                Console.WriteLine("Ваш ивентарь пуст\n");
+            }
+        }
+    }
+
+    class Dealer
+    {
+        private List<Product> _inventory;
+
+        public Dealer(List<Product> inventory)
+        {
+            _inventory = inventory;
+        }
+
+        public Product Sell(string playerInput)
+        {
+            if (_inventory.Count > 0)
+            {
+                Product requiredProduct = null;
+
+                foreach (var product in _inventory)
+                {
+                    if (product.Name == playerInput)
                     {
-                        _allBooks.Remove(book);
-                        Console.WriteLine("Книга удалена\n");
-                        break;
+                        requiredProduct = product;
                     }
                 }
-            }
-            else
-            {
-                Console.WriteLine("В хранилище пока нет книг\n");
-            }
-        }
 
-        private void ShowAll()
-        {
-            if (_allBooks.Count > 0)
-            {
-                foreach (var book in _allBooks)
+                if (requiredProduct != null)
                 {
-                    book.ShowInfo();
+                    _inventory.Remove(requiredProduct);
+                    Console.WriteLine();
+                    return requiredProduct;
+                }
+                else
+                {
+                    Console.WriteLine("Такого товара нет\n");
+                    return null;
                 }
             }
             else
             {
-                Console.WriteLine("В хранилище пока нет книг");
+                Console.WriteLine("У продавца не осталось товаров\n");
+                return null;
             }
-
-            Console.WriteLine();
         }
 
-        private void FindByTitle()
+        public void ShowInventory()
         {
-            Console.WriteLine("Введите название");
-            string title = Console.ReadLine();
-
-            foreach (var book in _allBooks)
+            foreach (var product in _inventory)
             {
-                if (book.Title == title)
-                {
-                    book.ShowInfo();
-                }
+                Console.WriteLine(product.Name);
             }
-
-            Console.WriteLine();
-        }
-
-        private void FindByAuthor()
-        {
-            Console.WriteLine("Введите автора");
-            string author = Console.ReadLine();
-
-            foreach (var book in _allBooks)
-            {
-                if (book.Author == author)
-                {
-                    book.ShowInfo();
-                }
-            }
-
-            Console.WriteLine();
-        }
-
-        private void FindByReleaseYear()
-        {
-            Console.WriteLine("Введите год выпуска");
-            int releaseYear = Convert.ToInt32(Console.ReadLine());
-
-            foreach (var book in _allBooks)
-            {
-                if (book.ReleaseYear == releaseYear)
-                {
-                    book.ShowInfo();
-                }
-            }
-
             Console.WriteLine();
         }
     }
 
-    class Book
+    class Product
     {
-        private string _title;
-        private string _author;
-        private int _releaseYear;
+        private string _name;
 
-        public string Title => _title;
-        public string Author => _author;
-        public int ReleaseYear => _releaseYear;
+        public string Name => _name;
 
-        public Book(string title, string author, int releaseYear)
+        public Product(string name)
         {
-            _title = title;
-            _author = author;
-            _releaseYear = releaseYear;
-        }
-
-        public void ShowInfo()
-        {
-            Console.WriteLine($"Название - {_title}, Автор - {_author}, Год выпуска - {_releaseYear}");
+            _name = name;
         }
     }
 }
