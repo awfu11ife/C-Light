@@ -15,19 +15,20 @@ namespace HomeWork43
 
         static void StartBidding()
         {
-            Player player = new Player(new List<Product>(0));
-            Dealer dealer = new Dealer(new List<Product> { new Product("Яблоко"), new Product("Зелье восстановления"), new Product("Зелье урона"), new Product("Меч"), new Product("Лук со стрелами") });
-
             const string ShowPlayerInventory = "showinventory";
             const string ShowDealerInventory = "showdealerinventory";
             const string BuyCommand = "buy";
             const string ExitCommand = "exit";
             string playerInput = null;
 
+            Player player = new Player(new List<Product>(0), 300);
+            Dealer dealer = new Dealer(new List<Product> { new Product("Яблоко", 20), new Product("Зелье восстановления", 40), new Product("Зелье урона", 40), new Product("Меч", 100), new Product("Лук со стрелами", 200) });
+
             Console.WriteLine("Добро пожаловать в волшебную лавку\n");
 
             while (playerInput != ExitCommand)
             {
+                Console.WriteLine($"Ваш баланс - {player.Balance}");
                 Console.WriteLine($"Вам доступны следующие команды\n" +
                     $"{ShowPlayerInventory} - показать ваш инвентарь\n" +
                     $"{ShowDealerInventory} - показать ассортимент продавца\n" +
@@ -38,11 +39,11 @@ namespace HomeWork43
                 switch (playerInput)
                 {
                     case ShowPlayerInventory:
-                        player.ShowInventory();
+                        player.ShowInventory("В вашем инвентаре","Ваш инвентарь пуст");
                         break;
 
                     case ShowDealerInventory:
-                        dealer.ShowInventory();
+                        dealer.ShowInventory("В лавке продавца есть","У продавца не осталось товаров");
                         break;
 
                     case BuyCommand:
@@ -60,13 +61,39 @@ namespace HomeWork43
         }
     }
 
-    class Player
+    class Participant
     {
-        private List<Product> _inventory;
+        protected List<Product> Inventory;
 
-        public Player(List<Product> inventory)
+        public void ShowInventory(string showInventoryMassage, string emptyInventoryMassage)
         {
-            _inventory = inventory;
+            if (Inventory.Count > 0)
+            {
+                Console.WriteLine(showInventoryMassage);
+
+                foreach (var product in Inventory)
+                {
+                    Console.WriteLine(product.Name + " по цене " + product.Price);
+                }
+                Console.WriteLine();
+            }
+            else
+            {
+                Console.WriteLine(emptyInventoryMassage + "\n");
+            }
+        }
+    }
+
+    class Player : Participant
+    {
+        private int _balance;
+
+        public int Balance => _balance;
+
+        public Player(List<Product> inventory, int balance)
+        {
+            Inventory = inventory;
+            _balance = balance;
         }
 
         public void Buy(Dealer dealer)
@@ -79,44 +106,34 @@ namespace HomeWork43
 
             if (requiredProduct != null)
             {
-                _inventory.Add(requiredProduct);
-                Console.WriteLine("Сделка прошла успешно\n");
-            }
-        }
-
-        public void ShowInventory()
-        {
-            if (_inventory.Count > 0)
-            {
-                foreach (var product in _inventory)
+                if (requiredProduct.Price < _balance)
                 {
-                    Console.WriteLine(product.Name);
+                    _balance -= requiredProduct.Price;
+                    Inventory.Add(requiredProduct);
+                    Console.WriteLine("Сделка прошла успешно\n");
                 }
-                Console.WriteLine();
-            }
-            else
-            {
-                Console.WriteLine("Ваш ивентарь пуст\n");
+                else
+                {
+                    Console.WriteLine("У вас недостаточно денег\n");
+                }
             }
         }
     }
 
-    class Dealer
+    class Dealer : Participant
     {
-        private List<Product> _inventory;
-
         public Dealer(List<Product> inventory)
         {
-            _inventory = inventory;
+            Inventory = inventory;
         }
 
         public Product Sell(string playerInput)
         {
-            if (_inventory.Count > 0)
+            if (Inventory.Count > 0)
             {
                 Product requiredProduct = null;
 
-                foreach (var product in _inventory)
+                foreach (var product in Inventory)
                 {
                     if (product.Name == playerInput)
                     {
@@ -126,7 +143,7 @@ namespace HomeWork43
 
                 if (requiredProduct != null)
                 {
-                    _inventory.Remove(requiredProduct);
+                    Inventory.Remove(requiredProduct);
                     Console.WriteLine();
                     return requiredProduct;
                 }
@@ -142,26 +159,19 @@ namespace HomeWork43
                 return null;
             }
         }
-
-        public void ShowInventory()
-        {
-            foreach (var product in _inventory)
-            {
-                Console.WriteLine(product.Name);
-            }
-            Console.WriteLine();
-        }
     }
 
     class Product
     {
         private string _name;
-
+        private int _price;
         public string Name => _name;
+        public int Price => _price;
 
-        public Product(string name)
+        public Product(string name, int price)
         {
             _name = name;
+            _price = price;
         }
     }
 }
