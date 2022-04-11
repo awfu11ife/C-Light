@@ -4,45 +4,77 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeWork41
+namespace HomeWork42
 {
     class Program
     {
         static void Main(string[] args)
         {
-            StartGame();
+            BookStorage bookStorage = new BookStorage(new List<Book>(0));
+
+            bookStorage.AccessStorage();
         }
-        static void StartGame()
+    }
+
+    class BookStorage
+    {
+        private List<Book> _allBooks = new List<Book>();
+
+        public BookStorage(List<Book> allBooks)
         {
-            const string TakeCard = "takecard";
-            const string ShowCards = "showcards";
-            const string Exit = "exit";
+            _allBooks = allBooks;
+        }
+
+        public void AccessStorage()
+        {
+            const string AddBook = "addbook";
+            const string RemoveBook = "removebook";
+            const string ShowAll = "showall";
+            const string FindByTitle = "findbytitle";
+            const string FindByAuthor = "findbyauthor";
+            const string FindByReleaseYear = "findbyyear";
+            const string ExitCommand = "exit";
             string userInput = null;
 
-            CardDeck cardDeck = new CardDeck(new List<Card>());
-            Player player = new Player(new List<Card>(0));
-
-            cardDeck.CreateDeck();
-
-            while (userInput != Exit)
+            while (userInput != ExitCommand)
             {
                 Console.WriteLine($"Вам доступны следующие команды:\n" +
-                    $"{TakeCard} - вять случайную карту\n" +
-                    $"{ShowCards} - показать ваши карты\n" +
-                    $"{Exit} - выйти\n");
+                    $"{AddBook} - добавить книгу\n" +
+                    $"{RemoveBook} - убрать книгу\n" +
+                    $"{ShowAll} - показать все книги\n" +
+                    $"{FindByTitle} - найти по названию\n" +
+                    $"{FindByAuthor} - найти по автору\n" +
+                    $"{FindByReleaseYear} - найти по году выпуска\n" +
+                    $"{ExitCommand} - выйти\n");
                 userInput = Console.ReadLine();
 
                 switch (userInput)
                 {
-                    case TakeCard:
-                        player.TakeCard(cardDeck);
+                    case AddBook:
+                        this.AddBook();
                         break;
 
-                    case ShowCards:
-                        player.ShowCards();
+                    case RemoveBook:
+                        this.RemoveBook();
                         break;
 
-                    case Exit:
+                    case ShowAll:
+                        this.ShowAll();
+                        break;
+
+                    case FindByTitle:
+                        this.FindByTitle();
+                        break;
+
+                    case FindByAuthor:
+                        this.FindByAuthor();
+                        break;
+
+                    case FindByReleaseYear:
+                        this.FindByReleaseYear();
+                        break;
+
+                    case ExitCommand:
                         break;
 
                     default:
@@ -50,95 +82,131 @@ namespace HomeWork41
                         break;
                 }
             }
-        }
-    }
 
-    class Player
-    {
-        private List<Card> _receivedCards = new List<Card>();
-
-        public Player(List<Card> recevedCards)
-        {
-            _receivedCards = recevedCards;
         }
 
-        public void ShowCards()
+        private void AddBook()
         {
+            Console.WriteLine("Введите название книги");
+            string title = Console.ReadLine();
+            Console.WriteLine("Введите автора");
+            string author = Console.ReadLine();
+            Console.WriteLine("Введите год выпуска");
+            int releaseYear = Convert.ToInt32(Console.ReadLine());
 
-            if (_receivedCards.Count > 0)
+            _allBooks.Add(new Book(title, author, releaseYear));
+            Console.WriteLine("Книга добавлена\n");
+        }
+
+        private void RemoveBook()
+        {
+            if (_allBooks.Count > 0)
             {
-                foreach (var card in _receivedCards)
+                Console.WriteLine("Введите название книги, которую хотите убрать");
+                string title = Console.ReadLine();
+
+                foreach (var book in _allBooks)
                 {
-                    Console.WriteLine($"{card.Value} {card.Suit} ");
+                    if (book.Title == title)
+                    {
+                        _allBooks.Remove(book);
+                        Console.WriteLine("Книга удалена\n");
+                        break;
+                    }
                 }
-                Console.WriteLine();
             }
             else
             {
-                Console.WriteLine("Вы ещё не взяли ни одной карты\n");
+                Console.WriteLine("В хранилище пока нет книг\n");
             }
         }
 
-        public void TakeCard(CardDeck cardDeck)
+        private void ShowAll()
         {
-            _receivedCards.Add(cardDeck.RemoveCard());
-        }
-
-    }
-
-    class CardDeck
-    {
-        private List<Card> _allCards;
-        private string[] _values = new string[] { "6", "7", "8", "9", "10", "Валет", "Дама", "Король", "Туз" };
-        private string[] _suits = new string[] { "Пики", "Червы", "Бубны", "Крести" };
-
-        public CardDeck(List<Card> allCards)
-        {
-            _allCards = allCards;
-        }
-       
-        public Card RemoveCard()
-        {
-            Random random = new Random();
-
-            if (_allCards.Count > 0)
+            if (_allBooks.Count > 0)
             {
-                Card currentCard = _allCards[random.Next(0, _allCards.Count)];
-                _allCards.Remove(currentCard);
-                Console.WriteLine("Вы взяли карту\n");
-                return currentCard;
+                foreach (var book in _allBooks)
+                {
+                    book.ShowInfo();
+                }
             }
             else
             {
-                Console.WriteLine("Вы забрали все карты\n");
-                return null;
+                Console.WriteLine("В хранилище пока нет книг");
             }
+
+            Console.WriteLine();
         }
 
-        public void CreateDeck()
+        private void FindByTitle()
         {
-            for (int i = 0; i < _suits.Length; i++)
+            Console.WriteLine("Введите название");
+            string title = Console.ReadLine();
+
+            foreach (var book in _allBooks)
             {
-                for (int j = 0; j < _values.Length; j++)
+                if (book.Title == title)
                 {
-                    _allCards.Add(new Card(_values[j], _suits[i]));
+                    book.ShowInfo();
                 }
             }
+
+            Console.WriteLine();
+        }
+
+        private void FindByAuthor()
+        {
+            Console.WriteLine("Введите автора");
+            string author = Console.ReadLine();
+
+            foreach (var book in _allBooks)
+            {
+                if (book.Author == author)
+                {
+                    book.ShowInfo();
+                }
+            }
+
+            Console.WriteLine();
+        }
+
+        private void FindByReleaseYear()
+        {
+            Console.WriteLine("Введите год выпуска");
+            int releaseYear = Convert.ToInt32(Console.ReadLine());
+
+            foreach (var book in _allBooks)
+            {
+                if (book.ReleaseYear == releaseYear)
+                {
+                    book.ShowInfo();
+                }
+            }
+
+            Console.WriteLine();
         }
     }
 
-    class Card
+    class Book
     {
-        private string _value;
-        private string _suit;
+        private string _title;
+        private string _author;
+        private int _releaseYear;
 
-        public string Value => _value;
-        public string Suit => _suit;
+        public string Title => _title;
+        public string Author => _author;
+        public int ReleaseYear => _releaseYear;
 
-        public Card(string value, string suit)
+        public Book(string title, string author, int releaseYear)
         {
-            _value = value;
-            _suit = suit;
+            _title = title;
+            _author = author;
+            _releaseYear = releaseYear;
+        }
+
+        public void ShowInfo()
+        {
+            Console.WriteLine($"Название - {_title}, Автор - {_author}, Год выпуска - {_releaseYear}");
         }
     }
 }
