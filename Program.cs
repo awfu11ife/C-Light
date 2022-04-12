@@ -4,53 +4,38 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeWork43
+namespace HomeWork44
 {
     class Program
     {
         static void Main(string[] args)
         {
-            StartBidding();
+            StartProgram();
         }
 
-        static void StartBidding()
+        static void StartProgram()
         {
-            const string ShowPlayerInventory = "showinventory";
-            const string ShowDealerInventory = "showdealerinventory";
-            const string BuyCommand = "buy";
-            const string ExitCommand = "exit";
-            string playerInput = null;
+            const string StopCommand = "stop";
+            const string CreatePlanCommand = "createplan";
+            string userInput = null;
 
-            Player player = new Player(new List<Product>(0), 300);
-            Dealer dealer = new Dealer(new List<Product> { new Product("Яблоко", 20), new Product("Зелье восстановления", 40), new Product("Зелье урона", 40), new Product("Меч", 100), new Product("Лук со стрелами", 200) });
+            Console.WriteLine("В этой программе вы можете создавать план поезда");
+            Console.WriteLine("В данный момент рейс отсутствует\n");
 
-            Console.WriteLine("Добро пожаловать в волшебную лавку\n");
-
-            while (playerInput != ExitCommand)
+            while (userInput != StopCommand)
             {
-                Console.WriteLine($"Ваш баланс - {player.Balance}");
                 Console.WriteLine($"Вам доступны следующие команды\n" +
-                    $"{ShowPlayerInventory} - показать ваш инвентарь\n" +
-                    $"{ShowDealerInventory} - показать ассортимент продавца\n" +
-                    $"{BuyCommand} - купить товар\n" +
-                    $"{ExitCommand} - уйти из лавки\n");
-                playerInput = Console.ReadLine();
+                    $"{CreatePlanCommand} - создать план поезда\n" +
+                    $"{StopCommand} - завершить программу\n");
+                userInput = Console.ReadLine();
 
-                switch (playerInput)
+                switch (userInput)
                 {
-                    case ShowPlayerInventory:
-                        player.ShowInventory("В вашем инвентаре","Ваш инвентарь пуст");
+                    case CreatePlanCommand:
+                        CreatePlan();
                         break;
 
-                    case ShowDealerInventory:
-                        dealer.ShowInventory("В лавке продавца есть","У продавца не осталось товаров");
-                        break;
-
-                    case BuyCommand:
-                        player.Buy(dealer);
-                        break;
-
-                    case ExitCommand:
+                    case StopCommand:
                         break;
 
                     default:
@@ -59,119 +44,110 @@ namespace HomeWork43
                 }
             }
         }
-    }
 
-    class Participant
-    {
-        protected List<Product> Inventory;
-
-        public void ShowInventory(string showInventoryMassage, string emptyInventoryMassage)
+        static void CreatePlan()
         {
-            if (Inventory.Count > 0)
-            {
-                Console.WriteLine(showInventoryMassage);
+            Console.WriteLine("Откуда следует поезд");
+            string fromDirection = Console.ReadLine();
+            Console.WriteLine("Куда следует поезд");
+            string toDirection = Console.ReadLine();
 
-                foreach (var product in Inventory)
-                {
-                    Console.WriteLine(product.Name + " по цене " + product.Price);
-                }
-                Console.WriteLine();
-            }
-            else
+            Direction direction = new Direction(fromDirection, toDirection);
+            Tickets tickets = new Tickets();
+            Train train = new Train(new List<Wagon>(0));
+
+            tickets.Show();
+
+            int currentWagon = 1;
+            int numberOfPassangers = tickets.Amount;
+            int numberOfPassangersInCurrentWagon;
+
+            while(numberOfPassangers > 0)
             {
-                Console.WriteLine(emptyInventoryMassage + "\n");
+                Console.WriteLine($"Введите количество пассажиров, которое хотите посадить в вагон номер {currentWagon}");
+                numberOfPassangersInCurrentWagon = Convert.ToInt32(Console.ReadLine());
+                numberOfPassangers -= numberOfPassangersInCurrentWagon;
+                train.AttachWagon(new Wagon(numberOfPassangersInCurrentWagon));
+                currentWagon++;
+                Console.WriteLine($"Осталось посадить {numberOfPassangers} пассажиров");
             }
+
+            currentWagon = 1;
+            Console.Clear();
+            direction.Show();
+            tickets.Show();
+            train.Send();
+            Console.ReadLine();
         }
     }
 
-    class Player : Participant
+    class Direction
     {
-        private int _balance;
+        private string _from;
+        private string _to;
 
-        public int Balance => _balance;
-
-        public Player(List<Product> inventory, int balance)
+        public Direction(string from, string to)
         {
-            Inventory = inventory;
-            _balance = balance;
+            _from = from;
+            _to = to;
         }
 
-        public void Buy(Dealer dealer)
+        public void Show()
         {
-            Console.WriteLine("Введите название желаемого товара");
-            string playerInput = Console.ReadLine();
-            Product requiredProduct = null;
-
-            requiredProduct = dealer.Sell(playerInput);
-
-            if (requiredProduct != null)
-            {
-                if (requiredProduct.Price < _balance)
-                {
-                    _balance -= requiredProduct.Price;
-                    Inventory.Add(requiredProduct);
-                    Console.WriteLine("Сделка прошла успешно\n");
-                }
-                else
-                {
-                    Console.WriteLine("У вас недостаточно денег\n");
-                }
-            }
+            Console.WriteLine($"Поезд следует маршрутом {_from} - {_to}");
         }
     }
 
-    class Dealer : Participant
+    class Tickets
     {
-        public Dealer(List<Product> inventory)
+        private int _amount;
+        private int _minAmount = 100;
+        private int _maxAmount = 300;
+        private Random _random = new Random();
+
+        public int Amount => _amount;
+
+        public Tickets()
         {
-            Inventory = inventory;
+            _amount = _random.Next(_minAmount, _maxAmount);
         }
 
-        public Product Sell(string playerInput)
+        public void Show()
         {
-            if (Inventory.Count > 0)
-            {
-                Product requiredProduct = null;
-
-                foreach (var product in Inventory)
-                {
-                    if (product.Name == playerInput)
-                    {
-                        requiredProduct = product;
-                    }
-                }
-
-                if (requiredProduct != null)
-                {
-                    Inventory.Remove(requiredProduct);
-                    Console.WriteLine();
-                    return requiredProduct;
-                }
-                else
-                {
-                    Console.WriteLine("Такого товара нет\n");
-                    return null;
-                }
-            }
-            else
-            {
-                Console.WriteLine("У продавца не осталось товаров\n");
-                return null;
-            }
+            Console.WriteLine($"На данное направление купили {_amount} билетов");
         }
     }
 
-    class Product
+    class Train
     {
-        private string _name;
-        private int _price;
-        public string Name => _name;
-        public int Price => _price;
+        private List<Wagon> _wagons;
 
-        public Product(string name, int price)
+        public Train(List<Wagon> wagons)
         {
-            _name = name;
-            _price = price;
+            _wagons = wagons;
+        }
+
+        public void AttachWagon(Wagon wagon)
+        {
+            _wagons.Add(wagon);
+            Console.WriteLine("Вагон успешно прицеплен");
+        }
+
+        public void Send()
+        {
+            Console.WriteLine($"Поезд из {_wagons.Count} вагонов отправлен");
+        }
+    }
+
+    class Wagon
+    {
+        private int _numberOfSits;
+
+        public int NumberOfSits => _numberOfSits;
+
+        public Wagon(int numberOfSits)
+        {
+            _numberOfSits = numberOfSits;
         }
     }
 }
