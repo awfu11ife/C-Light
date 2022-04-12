@@ -47,29 +47,33 @@ namespace HomeWork44
 
         static void CreatePlan()
         {
-            Console.WriteLine("Откуда следует поезд");
-            string fromDirection = Console.ReadLine();
-            Console.WriteLine("Куда следует поезд");
-            string toDirection = Console.ReadLine();
-
-            Direction direction = new Direction(fromDirection, toDirection);
             Tickets tickets = new Tickets();
             Train train = new Train(new List<Wagon>(0));
+            Direction direction = CreateRoute();
 
             tickets.Show();
 
             int currentWagon = 1;
             int numberOfPassangers = tickets.Amount;
             int numberOfPassangersInCurrentWagon;
+            bool isCorrect = true;
 
-            while(numberOfPassangers > 0)
+            while (numberOfPassangers > 0)
             {
-                Console.WriteLine($"Введите количество пассажиров, которое хотите посадить в вагон номер {currentWagon}");
-                numberOfPassangersInCurrentWagon = Convert.ToInt32(Console.ReadLine());
-                numberOfPassangers -= numberOfPassangersInCurrentWagon;
-                train.AttachWagon(new Wagon(numberOfPassangersInCurrentWagon));
-                currentWagon++;
-                Console.WriteLine($"Осталось посадить {numberOfPassangers} пассажиров");
+                Console.WriteLine($"Введите количество мест, которое хотите создать для вагона номер {currentWagon}");
+                if (isCorrect == int.TryParse(Console.ReadLine(), out int amount))
+                {
+                    numberOfPassangersInCurrentWagon = amount;
+                    numberOfPassangers -= numberOfPassangersInCurrentWagon;
+                    train.AttachWagon(new Wagon(numberOfPassangersInCurrentWagon));
+                    currentWagon++;
+                    Console.WriteLine($"Осталось посадить {numberOfPassangers} пассажиров");
+                }
+                else
+                {
+                    Console.WriteLine("Это не число, попробуйте ещё раз");
+                    continue;
+                }
             }
 
             currentWagon = 1;
@@ -78,6 +82,17 @@ namespace HomeWork44
             tickets.Show();
             train.Send();
             Console.ReadLine();
+        }
+
+        static Direction CreateRoute()
+        {
+            Console.WriteLine("Откуда следует поезд");
+            string fromDirection = Console.ReadLine();
+            Console.WriteLine("Куда следует поезд");
+            string toDirection = Console.ReadLine();
+
+            Direction direction = new Direction(fromDirection, toDirection);
+            return direction;
         }
     }
 
