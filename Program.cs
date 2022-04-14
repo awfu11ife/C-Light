@@ -4,165 +4,253 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeWork44
+namespace HomeWork45
 {
     class Program
     {
         static void Main(string[] args)
         {
-            StartProgram();
+            List<Fighter> fighters = new List<Fighter>() { new BoomerMan(300, 50, "Jack"), new Mathematican(300, 2, "Tom"),  new Randomer(200, "Mike"), new Returner(200, 15, "John"), new Dormouse(100, 60, 100, "Jason")};
+
+            StartFignt(SelectFighters(fighters));
         }
 
-        static void StartProgram()
+        static List<Fighter> SelectFighters(List<Fighter> fighters)
         {
-            const string StopCommand = "stop";
-            const string CreatePlanCommand = "createplan";
-            string userInput = null;
+            List<Fighter> returnFighters = new List<Fighter>(0);
+            int number = 0;
+            int maxNumberOfFighters = 2;
+            bool isCorrectInput;
 
-            Console.WriteLine("В этой программе вы можете создавать план поезда");
-            Console.WriteLine("В данный момент рейс отсутствует\n");
-
-            while (userInput != StopCommand)
+            while (returnFighters.Count < maxNumberOfFighters)
             {
-                Console.WriteLine($"Вам доступны следующие команды\n" +
-                    $"{CreatePlanCommand} - создать план поезда\n" +
-                    $"{StopCommand} - завершить программу\n");
-                userInput = Console.ReadLine();
-
-                switch (userInput)
+                foreach (var fighter in fighters)
                 {
-                    case CreatePlanCommand:
-                        CreatePlan();
-                        break;
-
-                    case StopCommand:
-                        break;
-
-                    default:
-                        Console.WriteLine("Такой команды нет\n");
-                        break;
+                    Console.Write($"{number} - ");
+                    fighter.ShowInfo();
+                    number++;
                 }
-            }
-        }
 
-        static void CreatePlan()
-        {
-            Tickets tickets = new Tickets();
-            Train train = new Train(new List<Wagon>(0));
-            Direction direction = CreateRoute();
 
-            tickets.Show();
+                Console.WriteLine("Введите номер желаемого бойца");
+                isCorrectInput = int.TryParse(Console.ReadLine(), out int numberOfFighter);
 
-            int currentWagon = 1;
-            int numberOfPassangers = tickets.Amount;
-            int numberOfPassangersInCurrentWagon;
-            bool isCorrect = true;
-
-            while (numberOfPassangers > 0)
-            {
-                Console.WriteLine($"Введите количество мест, которое хотите создать для вагона номер {currentWagon}");
-                if (isCorrect == int.TryParse(Console.ReadLine(), out int amount))
+                if (isCorrectInput == true && numberOfFighter < fighters.Count)
                 {
-                    numberOfPassangersInCurrentWagon = amount;
-                    numberOfPassangers -= numberOfPassangersInCurrentWagon;
-                    train.AttachWagon(new Wagon(numberOfPassangersInCurrentWagon));
-                    currentWagon++;
-                    Console.WriteLine($"Осталось посадить {numberOfPassangers} пассажиров");
+                    returnFighters.Add(fighters[numberOfFighter]);
+                    fighters.RemoveAt(numberOfFighter);
+                    Console.WriteLine("Боец выбран");
                 }
                 else
                 {
-                    Console.WriteLine("Это не число, попробуйте ещё раз");
-                    continue;
+                    Console.WriteLine("Такого бойца нет");
                 }
+
+                number = 0;
+                Console.Clear();
             }
 
-            currentWagon = 1;
-            Console.Clear();
-            direction.Show();
-            tickets.Show();
-            train.Send();
-            Console.ReadLine();
+            return returnFighters;
         }
 
-        static Direction CreateRoute()
+        static void StartFignt(List<Fighter> selectedFighters)
         {
-            Console.WriteLine("Откуда следует поезд");
-            string fromDirection = Console.ReadLine();
-            Console.WriteLine("Куда следует поезд");
-            string toDirection = Console.ReadLine();
+            while (selectedFighters[0].NowHealth > 0 && selectedFighters[1].NowHealth > 0)
+            {
+                int firstFighterDamage = selectedFighters[0].Attack();
+                int secondFighterDamage = selectedFighters[1].Attack();
+                selectedFighters[0].GetDamage(secondFighterDamage);
+                selectedFighters[1].GetDamage(firstFighterDamage);
+            }
 
-            Direction direction = new Direction(fromDirection, toDirection);
-            return direction;
-        }
-    }
-
-    class Direction
-    {
-        private string _from;
-        private string _to;
-
-        public Direction(string from, string to)
-        {
-            _from = from;
-            _to = to;
-        }
-
-        public void Show()
-        {
-            Console.WriteLine($"Поезд следует маршрутом {_from} - {_to}");
+            if (selectedFighters[0].NowHealth <= 0)
+            {
+                Console.WriteLine($"Победил {selectedFighters[1].FighterName}");
+            }
+            else
+            {
+                Console.WriteLine($"Победил {selectedFighters[0].FighterName}");
+            }
         }
     }
 
-    class Tickets
+    abstract class Fighter
     {
-        private int _amount;
-        private int _minAmount = 100;
-        private int _maxAmount = 300;
-        private Random _random = new Random();
+        protected int Health;
+        protected int Damage;
+        protected int Armor;
+        protected string Name;
+        protected string Description;
 
-        public int Amount => _amount;
+        public string FighterName => Name;
+        public int NowHealth => Health;
 
-        public Tickets()
+        abstract public int Attack();
+
+        abstract public void GetDamage(int damage);
+
+        public void ShowInfo()
         {
-            _amount = _random.Next(_minAmount, _maxAmount);
+            Console.WriteLine($"Боец {Name} имеет следующие характеристики: урон - {Damage}, здоровье - {Health}, броня -  {Armor}\n" +
+                $"Описание: {Description}");
         }
 
-        public void Show()
+        protected void ShowCurrentStats()
         {
-            Console.WriteLine($"На данное направление купили {_amount} билетов");
+            Console.WriteLine($"У {Name} сейчас {Health} здоровья и  {Armor} единиц брони");
         }
     }
 
-    class Train
+    class BoomerMan : Fighter
     {
-        private List<Wagon> _wagons;
-
-        public Train(List<Wagon> wagons)
+        public BoomerMan(int health, int damage, string name)
         {
-            _wagons = wagons;
+            Health = health;
+            Damage = damage;
+            Name = name;
+            Armor = 0;
+            Description = "С шансом 50% наносит урон х2, броня отсутствует";
         }
 
-        public void AttachWagon(Wagon wagon)
+        public override int Attack()
         {
-            _wagons.Add(wagon);
-            Console.WriteLine("Вагон успешно прицеплен");
+            int maxValue = 2;
+            int minValue = 0;
+            int increase = 2;
+            Random random = new Random();
+            int chance = random.Next(minValue, maxValue);
+
+            if (chance == 1)
+            {
+                return Damage * increase;
+            }
+            else
+            {
+                return Damage;
+            }
         }
 
-        public void Send()
+        public override void GetDamage(int damage)
         {
-            Console.WriteLine($"Поезд из {_wagons.Count} вагонов отправлен");
+            Health -= damage;
+            ShowCurrentStats();
         }
     }
 
-    class Wagon
+    class Mathematican : Fighter
     {
-        private int _numberOfSits;
-
-        public int NumberOfSits => _numberOfSits;
-
-        public Wagon(int numberOfSits)
+        public Mathematican(int health, int damage, string name)
         {
-            _numberOfSits = numberOfSits;
+            Health = health;
+            Damage = damage;
+            Name = name;
+            Armor = 0;
+            Description = "С кажной атакой возводит свой урон в степень, не имеет брони";
+        }
+
+        public override int Attack()
+        {
+            int NowDamage = Damage;
+            return NowDamage * Damage;
+        }
+
+        public override void GetDamage(int damage)
+        {
+            Health -= damage;
+            ShowCurrentStats();
+        }
+    }
+
+    class Randomer : Fighter
+    {
+        private int _maxDamage = 31;
+        private int _minDamage = 10;
+        public Randomer(int health, string name)
+        {
+            Health = health;
+            Name = name;
+            Description = $"Наносит рандомный урон от {_minDamage} до {_maxDamage - 1} и восстанавливает соответствующее количество здоровья";
+        }
+
+        public override int Attack()
+        {
+            Random random = new Random();
+            int randoNumber = random.Next(_minDamage, _maxDamage);
+
+            Health += randoNumber;
+            return randoNumber;
+
+        }
+
+        public override void GetDamage(int damage)
+        {
+            Health -= damage;
+            ShowCurrentStats();
+        }
+    }
+
+    class Returner : Fighter
+    {
+        private int _takenDamage = 0;
+        private int _coefficient = 2;
+
+        public Returner(int health, int armor, string name)
+        {
+            Health = health;
+            Damage = 0000;
+            Name = name;
+            Armor = 0;
+            Description = $"Возвращает полученный урон в двойном размере, армор отсутствует";
+        }
+
+        public override int Attack()
+        {
+            return _takenDamage * _coefficient;
+        }
+
+        public override void GetDamage(int damage)
+        {
+            Health -= damage;
+            _takenDamage = damage;
+            ShowCurrentStats();
+        }
+    }
+
+    class Dormouse : Fighter
+    {
+        private int _requiredHealth = 50;
+        private int _minHealth = 100;
+        private int _nullDamage = 0;
+
+        public Dormouse(int health, int damage, int armor, string name)
+        {
+            if (health > _requiredHealth)
+                Health = health;
+            else
+                Health = _minHealth;
+
+            Damage = damage;
+            Name = name;
+            Armor = armor;
+            Description = $"Пока его здоровье больше {_requiredHealth} он будет спать";
+        }
+
+
+        public override int Attack()
+        {
+            if (Health <= _requiredHealth)
+                return Damage;
+            else
+                return _nullDamage;
+        }
+
+        public override void GetDamage(int damage)
+        {
+            if (Armor > 0)
+                Armor -= damage;
+            else
+                Health -= damage;
+            ShowCurrentStats();
         }
     }
 }
