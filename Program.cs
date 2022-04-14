@@ -4,253 +4,146 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeWork45
+namespace HomeWork46
 {
     class Program
     {
         static void Main(string[] args)
         {
-            List<Fighter> fighters = new List<Fighter>() { new BoomerMan(300, 50, "Jack"), new Mathematican(300, 2, "Tom"),  new Randomer(200, "Mike"), new Returner(200, 15, "John"), new Dormouse(100, 60, 100, "Jason")};
+            List<Product> allProducts = new List<Product> { new Product("Сыр", 150), new Product("Молоко", 50), new Product("Макароны", 70), new Product("Масло", 200), new Product("Хлеб", 50) };
+            CashRegistes cashRegistes = new CashRegistes(new Queue<Buyer>());
 
-            StartFignt(SelectFighters(fighters));
+            cashRegistes.StartServing(allProducts);
+        }
+    }
+
+    class CashRegistes
+    {
+        private Queue<Buyer> _buyers = new Queue<Buyer>();
+        private int _revenue = 0;
+
+        public CashRegistes(Queue<Buyer> buyers)
+        {
+            _buyers = buyers;
         }
 
-        static List<Fighter> SelectFighters(List<Fighter> fighters)
+        public void StartServing(List<Product> allProducts)
         {
-            List<Fighter> returnFighters = new List<Fighter>(0);
-            int number = 0;
-            int maxNumberOfFighters = 2;
-            bool isCorrectInput;
+            CreateQueue(allProducts, 5);
 
-            while (returnFighters.Count < maxNumberOfFighters)
+            while (_buyers.Count > 0)
             {
-                foreach (var fighter in fighters)
-                {
-                    Console.Write($"{number} - ");
-                    fighter.ShowInfo();
-                    number++;
-                }
-
-
-                Console.WriteLine("Введите номер желаемого бойца");
-                isCorrectInput = int.TryParse(Console.ReadLine(), out int numberOfFighter);
-
-                if (isCorrectInput == true && numberOfFighter < fighters.Count)
-                {
-                    returnFighters.Add(fighters[numberOfFighter]);
-                    fighters.RemoveAt(numberOfFighter);
-                    Console.WriteLine("Боец выбран");
-                }
-                else
-                {
-                    Console.WriteLine("Такого бойца нет");
-                }
-
-                number = 0;
+                SereveBuyer();
+                Console.WriteLine($"Чтобы обслужить следующего клиента нажмите любую клавишу");
+                Console.ReadKey();
                 Console.Clear();
             }
 
-            return returnFighters;
+            Console.WriteLine($"Общая выручка - {_revenue}");
         }
 
-        static void StartFignt(List<Fighter> selectedFighters)
+        private void SereveBuyer()
         {
-            while (selectedFighters[0].NowHealth > 0 && selectedFighters[1].NowHealth > 0)
+            Buyer currentBuyer = _buyers.Dequeue();
+
+            Console.WriteLine($"У покупателя {currentBuyer.Money} рублей\n");
+            currentBuyer.ShowBasket();
+
+            while (currentBuyer.Money < currentBuyer.PriceAmount)
             {
-                int firstFighterDamage = selectedFighters[0].Attack();
-                int secondFighterDamage = selectedFighters[1].Attack();
-                selectedFighters[0].GetDamage(secondFighterDamage);
-                selectedFighters[1].GetDamage(firstFighterDamage);
+                Console.WriteLine($"Поккупателю нехванает {currentBuyer.PriceAmount - currentBuyer.Money} рублей");
+                currentBuyer.RemoveRandomProduct();
             }
 
-            if (selectedFighters[0].NowHealth <= 0)
-            {
-                Console.WriteLine($"Победил {selectedFighters[1].FighterName}");
-            }
-            else
-            {
-                Console.WriteLine($"Победил {selectedFighters[0].FighterName}");
-            }
+            CountRenue(currentBuyer);
         }
-    }
 
-    abstract class Fighter
-    {
-        protected int Health;
-        protected int Damage;
-        protected int Armor;
-        protected string Name;
-        protected string Description;
-
-        public string FighterName => Name;
-        public int NowHealth => Health;
-
-        abstract public int Attack();
-
-        abstract public void GetDamage(int damage);
-
-        public void ShowInfo()
+        private void CountRenue(Buyer currentBuyer)
         {
-            Console.WriteLine($"Боец {Name} имеет следующие характеристики: урон - {Damage}, здоровье - {Health}, броня -  {Armor}\n" +
-                $"Описание: {Description}");
+            _revenue += currentBuyer.PriceAmount;
         }
 
-        protected void ShowCurrentStats()
-        {
-            Console.WriteLine($"У {Name} сейчас {Health} здоровья и  {Armor} единиц брони");
-        }
-    }
-
-    class BoomerMan : Fighter
-    {
-        public BoomerMan(int health, int damage, string name)
-        {
-            Health = health;
-            Damage = damage;
-            Name = name;
-            Armor = 0;
-            Description = "С шансом 50% наносит урон х2, броня отсутствует";
-        }
-
-        public override int Attack()
-        {
-            int maxValue = 2;
-            int minValue = 0;
-            int increase = 2;
-            Random random = new Random();
-            int chance = random.Next(minValue, maxValue);
-
-            if (chance == 1)
-            {
-                return Damage * increase;
-            }
-            else
-            {
-                return Damage;
-            }
-        }
-
-        public override void GetDamage(int damage)
-        {
-            Health -= damage;
-            ShowCurrentStats();
-        }
-    }
-
-    class Mathematican : Fighter
-    {
-        public Mathematican(int health, int damage, string name)
-        {
-            Health = health;
-            Damage = damage;
-            Name = name;
-            Armor = 0;
-            Description = "С кажной атакой возводит свой урон в степень, не имеет брони";
-        }
-
-        public override int Attack()
-        {
-            int NowDamage = Damage;
-            return NowDamage * Damage;
-        }
-
-        public override void GetDamage(int damage)
-        {
-            Health -= damage;
-            ShowCurrentStats();
-        }
-    }
-
-    class Randomer : Fighter
-    {
-        private int _maxDamage = 31;
-        private int _minDamage = 10;
-        public Randomer(int health, string name)
-        {
-            Health = health;
-            Name = name;
-            Description = $"Наносит рандомный урон от {_minDamage} до {_maxDamage - 1} и восстанавливает соответствующее количество здоровья";
-        }
-
-        public override int Attack()
+        private void CreateQueue(List<Product> allProducts, int count)
         {
             Random random = new Random();
-            int randoNumber = random.Next(_minDamage, _maxDamage);
+            int maxMoneyAmount = 500;
+            int minMoneyAmount = 150;
 
-            Health += randoNumber;
-            return randoNumber;
+            for (int i = 0; i < count; i++)
+            {
+                _buyers.Enqueue(new Buyer(allProducts, random.Next(minMoneyAmount, maxMoneyAmount)));
+            }
+        }
+    }
+    
+    class Buyer
+    {
+        public int Money { get; private set; }
+        public int PriceAmount { get; private set; }
+
+        private List<Product> _basket = new List<Product>();
+
+        public Buyer(List<Product> allProducts, int money)
+        {
+            Money = money;
+            CreateBascket(allProducts);
+        }
+
+        private void CreateBascket(List<Product> allProducts)
+        {
+            Random random = new Random();
+            int maxProductAmount = 10;
+            int minProductAmount = 5;
+            List<Product> basket = new List<Product>();
+
+            for (int i = minProductAmount; i <= maxProductAmount; i++)
+            {
+                _basket.Add(allProducts[random.Next(0, allProducts.Count)]);
+            }
+
 
         }
 
-        public override void GetDamage(int damage)
+        public void ShowBasket()
         {
-            Health -= damage;
-            ShowCurrentStats();
+            int currentPriceAmount = 0;
+
+            Console.WriteLine("В корзине находятся:");
+
+            foreach (var product in _basket)
+            {
+                Console.WriteLine($"Товар {product.Name} по цене {product.Price}");
+                currentPriceAmount += product.Price;
+            }
+
+            PriceAmount = currentPriceAmount;
+            Console.WriteLine($"Текущая цена корзины {PriceAmount}\n");
+        }
+
+        public void RemoveRandomProduct()
+        {
+            Random random = new Random();
+            int randomProductIndex = random.Next(0, _basket.Count - 1);
+
+            Console.WriteLine($"Из корзины убран товар {_basket[randomProductIndex].Name}");
+            PriceAmount -= _basket[randomProductIndex].Price;
+            Console.WriteLine($"Текущая цена корзины {PriceAmount}\n");
+            _basket.RemoveAt(randomProductIndex);
         }
     }
 
-    class Returner : Fighter
+    class Product
     {
-        private int _takenDamage = 0;
-        private int _coefficient = 2;
+        private string _name;
+        private int _price;
 
-        public Returner(int health, int armor, string name)
+        public string Name => _name;
+        public int Price => _price;
+
+        public Product(string name, int price)
         {
-            Health = health;
-            Damage = 0000;
-            Name = name;
-            Armor = 0;
-            Description = $"Возвращает полученный урон в двойном размере, армор отсутствует";
-        }
-
-        public override int Attack()
-        {
-            return _takenDamage * _coefficient;
-        }
-
-        public override void GetDamage(int damage)
-        {
-            Health -= damage;
-            _takenDamage = damage;
-            ShowCurrentStats();
-        }
-    }
-
-    class Dormouse : Fighter
-    {
-        private int _requiredHealth = 50;
-        private int _minHealth = 100;
-        private int _nullDamage = 0;
-
-        public Dormouse(int health, int damage, int armor, string name)
-        {
-            if (health > _requiredHealth)
-                Health = health;
-            else
-                Health = _minHealth;
-
-            Damage = damage;
-            Name = name;
-            Armor = armor;
-            Description = $"Пока его здоровье больше {_requiredHealth} он будет спать";
-        }
-
-
-        public override int Attack()
-        {
-            if (Health <= _requiredHealth)
-                return Damage;
-            else
-                return _nullDamage;
-        }
-
-        public override void GetDamage(int damage)
-        {
-            if (Armor > 0)
-                Armor -= damage;
-            else
-                Health -= damage;
-            ShowCurrentStats();
+            _name = name;
+            _price = price;
         }
     }
 }
