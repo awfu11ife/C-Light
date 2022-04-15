@@ -10,7 +10,7 @@ namespace HomeWork46
     {
         static void Main(string[] args)
         {
-            List<Product> allProducts = new List<Product> { new Product("Сыр", 150), new Product("Молоко", 50), new Product("Макароны", 70), new Product("Масло", 200), new Product("Хлеб", 50) };
+            IReadOnlyList<Product> allProducts = new List<Product> { new Product("Сыр", 150), new Product("Молоко", 50), new Product("Макароны", 70), new Product("Масло", 200), new Product("Хлеб", 50) };
             Superarket cashRegistes = new Superarket(new Queue<Buyer>(), 7);
 
             cashRegistes.StartServing(allProducts);
@@ -29,7 +29,7 @@ namespace HomeWork46
             _queueLenght = queueLenght;
         }
 
-        public void StartServing(List<Product> allProducts)
+        public void StartServing(IReadOnlyList<Product> allProducts)
         {
             CreateQueue(_queueLenght);
 
@@ -44,7 +44,7 @@ namespace HomeWork46
             Console.WriteLine($"Общая выручка - {_revenue}");
         }
 
-        private void SereveBuyer(List<Product> allProducts)
+        private void SereveBuyer(IReadOnlyList<Product> allProducts)
         {
             Buyer currentBuyer = _buyers.Dequeue();
             currentBuyer.CreateBascket(allProducts);
@@ -92,7 +92,7 @@ namespace HomeWork46
             Money = money;
         }
 
-        public void CreateBascket(List<Product> allProducts)
+        public void CreateBascket(IReadOnlyList<Product> allProducts)
         {
             Random random = new Random();
             int maxProductAmount = 10;
