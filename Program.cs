@@ -11,29 +11,31 @@ namespace HomeWork46
         static void Main(string[] args)
         {
             List<Product> allProducts = new List<Product> { new Product("Сыр", 150), new Product("Молоко", 50), new Product("Макароны", 70), new Product("Масло", 200), new Product("Хлеб", 50) };
-            CashRegistes cashRegistes = new CashRegistes(new Queue<Buyer>());
+            Superarket cashRegistes = new Superarket(new Queue<Buyer>(), 7);
 
             cashRegistes.StartServing(allProducts);
         }
     }
 
-    class CashRegistes
+    class Superarket
     {
         private Queue<Buyer> _buyers = new Queue<Buyer>();
+        private int _queueLenght;
         private int _revenue = 0;
 
-        public CashRegistes(Queue<Buyer> buyers)
+        public Superarket(Queue<Buyer> buyers, int queueLenght)
         {
             _buyers = buyers;
+            _queueLenght = queueLenght;
         }
 
         public void StartServing(List<Product> allProducts)
         {
-            CreateQueue(allProducts, 5);
+            CreateQueue(_queueLenght);
 
             while (_buyers.Count > 0)
             {
-                SereveBuyer();
+                SereveBuyer(allProducts);
                 Console.WriteLine($"Чтобы обслужить следующего клиента нажмите любую клавишу");
                 Console.ReadKey();
                 Console.Clear();
@@ -42,12 +44,13 @@ namespace HomeWork46
             Console.WriteLine($"Общая выручка - {_revenue}");
         }
 
-        private void SereveBuyer()
+        private void SereveBuyer(List<Product> allProducts)
         {
             Buyer currentBuyer = _buyers.Dequeue();
-
+            currentBuyer.CreateBascket(allProducts);
             Console.WriteLine($"У покупателя {currentBuyer.Money} рублей\n");
             currentBuyer.ShowBasket();
+            currentBuyer.CountPriceAmout();
 
             while (currentBuyer.Money < currentBuyer.PriceAmount)
             {
@@ -56,6 +59,7 @@ namespace HomeWork46
             }
 
             CountRenue(currentBuyer);
+            Console.WriteLine($"С этого клиента вы получили - {currentBuyer.PriceAmount} рублей");
         }
 
         private void CountRenue(Buyer currentBuyer)
@@ -63,33 +67,32 @@ namespace HomeWork46
             _revenue += currentBuyer.PriceAmount;
         }
 
-        private void CreateQueue(List<Product> allProducts, int count)
+        private void CreateQueue(int count)
         {
             Random random = new Random();
-            int maxMoneyAmount = 500;
-            int minMoneyAmount = 150;
+            int maxMoneyAmount = 800;
+            int minMoneyAmount = 300;
 
             for (int i = 0; i < count; i++)
             {
-                _buyers.Enqueue(new Buyer(allProducts, random.Next(minMoneyAmount, maxMoneyAmount)));
+                _buyers.Enqueue(new Buyer(random.Next(minMoneyAmount, maxMoneyAmount)));
             }
         }
     }
-    
+
     class Buyer
     {
+        private List<Product> _basket = new List<Product>();
+
         public int Money { get; private set; }
         public int PriceAmount { get; private set; }
 
-        private List<Product> _basket = new List<Product>();
-
-        public Buyer(List<Product> allProducts, int money)
+        public Buyer(int money)
         {
             Money = money;
-            CreateBascket(allProducts);
         }
 
-        private void CreateBascket(List<Product> allProducts)
+        public void CreateBascket(List<Product> allProducts)
         {
             Random random = new Random();
             int maxProductAmount = 10;
@@ -98,26 +101,33 @@ namespace HomeWork46
 
             for (int i = minProductAmount; i <= maxProductAmount; i++)
             {
-                _basket.Add(allProducts[random.Next(0, allProducts.Count)]);
+                basket.Add(allProducts[random.Next(0, allProducts.Count)]);
             }
 
-
+            _basket = basket;
         }
 
         public void ShowBasket()
         {
-            int currentPriceAmount = 0;
-
             Console.WriteLine("В корзине находятся:");
 
             foreach (var product in _basket)
             {
                 Console.WriteLine($"Товар {product.Name} по цене {product.Price}");
+            }
+        }
+
+        public void CountPriceAmout()
+        {
+            int currentPriceAmount = 0;
+
+            foreach (var product in _basket)
+            {
                 currentPriceAmount += product.Price;
             }
 
             PriceAmount = currentPriceAmount;
-            Console.WriteLine($"Текущая цена корзины {PriceAmount}\n");
+            Console.WriteLine($"\nТекущая цена корзины {PriceAmount}\n");
         }
 
         public void RemoveRandomProduct()
