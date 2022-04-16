@@ -10,28 +10,157 @@ namespace HomeWork47
     {
         static void Main(string[] args)
         {
-            
+            Battlefield battlefield = new Battlefield();
+            battlefield.CreatePlatoon();
+            battlefield.ShowInfo();
+            battlefield.StartBattle();
         }
     }
 
     class Battlefield
     {
+        private List<Soldier> firstContryPlatoon = new List<Soldier>();
+        private List<Soldier> secondContryPlatoon = new List<Soldier>();
 
+        public void CreatePlatoon()
+        {
+            bool isCorrectInput = false;
+
+            while (isCorrectInput == false)
+            {
+                Console.WriteLine("Вдите количество войск, которое должно быть на поле боя, число дожно быть чётное");
+                isCorrectInput = (int.TryParse(Console.ReadLine(), out int numberOfSoldiers) && numberOfSoldiers % 2 == 0);
+
+                if (isCorrectInput)
+                {
+                    Platoon platoon = new Platoon(numberOfSoldiers);
+                    List<Soldier> tempListSoldiers = platoon.Create();
+
+                    for (int i = 0; i < numberOfSoldiers / 2; i++)
+                    {
+                        firstContryPlatoon.Add(tempListSoldiers[i]);
+                    }
+
+                    for (int i = numberOfSoldiers - 1; i >= numberOfSoldiers / 2; i--)
+                    {
+                        secondContryPlatoon.Add(tempListSoldiers[i]);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Вы допустили ошибку при вводе, попробуйте снова");
+                    continue;
+                }
+            }
+
+            Console.Clear();
+        }
+
+        public void ShowInfo()
+        {
+            Console.WriteLine("В первом взводе находятся:\n");
+
+            foreach (var soldier in firstContryPlatoon)
+            {
+                soldier.ShowInfo();
+            }
+
+            Console.ReadKey();
+            Console.Clear();
+            Console.WriteLine("Во втором взводе находятся\n");
+
+            foreach (var soldier in secondContryPlatoon)
+            {
+                soldier.ShowInfo();
+            }
+
+            Console.ReadKey();
+            Console.Clear();
+        }
+
+        public void StartBattle()
+        {
+            while (firstContryPlatoon.Count > 0 && secondContryPlatoon.Count > 0)
+            {
+                for (int i = 0; i < firstContryPlatoon.Count; i++)
+                {
+                    for (int j = 0; j < secondContryPlatoon.Count; j++)
+                    {
+                        if (i < firstContryPlatoon.Count && j < secondContryPlatoon.Count)
+                        {
+                            firstContryPlatoon[i].GetDamage(secondContryPlatoon[j].Attack());
+                            secondContryPlatoon[j].GetDamage(firstContryPlatoon[i].Attack());
+
+                            if (firstContryPlatoon[i].CurrentHealth <= 0)
+                            {
+                                firstContryPlatoon.RemoveAt(i);
+                                continue;
+                            }
+
+                            if (secondContryPlatoon[j].CurrentHealth <= 0)
+                            {
+                                secondContryPlatoon.RemoveAt(j);
+                                continue;
+                            }
+                        }
+                    }
+                }
+
+                Console.WriteLine($"Текущие показатели первого взвода:\n");
+
+                foreach (var soldier in firstContryPlatoon)
+                {
+                    Console.WriteLine($"Тип войск - {soldier.CurrentTroopType}, здоровье - {soldier.CurrentHealth}");
+                }
+
+                Console.WriteLine($"\nТекущие показатели вторго взвода:\n");
+
+                foreach (var soldier in secondContryPlatoon)
+                {
+                    Console.WriteLine($"Тип войск - {soldier.CurrentTroopType}, здоровье - {soldier.CurrentHealth}");
+                }
+
+                Console.ReadKey();
+                Console.Clear();
+            }
+
+            Console.WriteLine($"В первом взводе осталось {firstContryPlatoon.Count}");
+            Console.WriteLine($"Во втором взводе осталось {secondContryPlatoon.Count}");
+        }
     }
 
     class Platoon
     {
         private int _numberOfSoldiers;
+        private int _soldiersTypeCount = 3;
 
         public Platoon(int numberOfSoldiers)
         {
             _numberOfSoldiers = numberOfSoldiers;
-        } 
+        }
 
         public List<Soldier> Create()
         {
             Random random = new Random();
             List<Soldier> soldiers = new List<Soldier>();
+
+            for (int i = 0; i < _numberOfSoldiers; i++)
+            {
+                switch (random.Next(0, _soldiersTypeCount))
+                {
+                    case 0:
+                        soldiers.Add(new StormTrooper(random));
+                        break;
+
+                    case 1:
+                        soldiers.Add(new Sniper(random));
+                        break;
+
+                    case 2:
+                        soldiers.Add(new Armored(random));
+                        break;
+                }
+            }
 
             return soldiers;
         }
@@ -52,18 +181,19 @@ namespace HomeWork47
         protected string Description;
 
         public int CurrentHealth => Health;
+        public string CurrentTroopType => TroopType;
 
         public abstract void GetDamage(int damage);
         public abstract int Attack();
         public void ShowInfo()
         {
             Console.WriteLine($"Тип войск: {TroopType}, урон: {Damage}, здоровье: {Health}, броня: {Armor}\nОписание: {Description}");
-        }                     
+        }
     }
 
     class StormTrooper : Soldier
     {
-        public StormTrooper()
+        public StormTrooper(Random random)
         {
             MaxHealth = 150;
             MinHealth = 100;
@@ -71,7 +201,6 @@ namespace HomeWork47
             MinDamage = 30;
             MaxArmor = 100;
             MinArmor = 80;
-            Random random = new Random();
 
             Health = random.Next(MinHealth, MaxHealth);
             Damage = random.Next(MinDamage, MaxDamage);
@@ -92,12 +221,12 @@ namespace HomeWork47
                 Armor -= damage;
             else
                 Health -= damage;
-        }       
+        }
     }
 
     class Sniper : Soldier
     {
-        public Sniper()
+        public Sniper(Random random)
         {
             MaxHealth = 100;
             MinHealth = 80;
@@ -105,7 +234,6 @@ namespace HomeWork47
             MinDamage = 70;
             MaxArmor = 70;
             MinArmor = 60;
-            Random random = new Random();
 
             Health = random.Next(MinHealth, MaxHealth);
             Damage = random.Next(MinDamage, MaxDamage);
@@ -137,7 +265,7 @@ namespace HomeWork47
 
     class Armored : Soldier
     {
-        public Armored()
+        public Armored(Random random)
         {
             MaxHealth = 200;
             MinHealth = 150;
@@ -145,7 +273,6 @@ namespace HomeWork47
             MinDamage = 20;
             MaxArmor = 200;
             MinArmor = 150;
-            Random random = new Random();
 
             Health = random.Next(MinHealth, MaxHealth);
             Damage = random.Next(MinDamage, MaxDamage);
