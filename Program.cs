@@ -4,156 +4,167 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeWork46
+namespace HomeWork47
 {
     class Program
     {
         static void Main(string[] args)
         {
-            IReadOnlyList<Product> allProducts = new List<Product> { new Product("Сыр", 150), new Product("Молоко", 50), new Product("Макароны", 70), new Product("Масло", 200), new Product("Хлеб", 50) };
-            Superarket cashRegistes = new Superarket(new Queue<Buyer>(), 7);
-
-            cashRegistes.StartServing(allProducts);
+            
         }
     }
 
-    class Superarket
+    class Battlefield
     {
-        private Queue<Buyer> _buyers = new Queue<Buyer>();
-        private int _queueLenght;
-        private int _revenue = 0;
 
-        public Superarket(Queue<Buyer> buyers, int queueLenght)
+    }
+
+    class Platoon
+    {
+        private int _numberOfSoldiers;
+
+        public Platoon(int numberOfSoldiers)
         {
-            _buyers = buyers;
-            _queueLenght = queueLenght;
-        }
+            _numberOfSoldiers = numberOfSoldiers;
+        } 
 
-        public void StartServing(IReadOnlyList<Product> allProducts)
-        {
-            CreateQueue(_queueLenght);
-
-            while (_buyers.Count > 0)
-            {
-                SereveBuyer(allProducts);
-                Console.WriteLine($"Чтобы обслужить следующего клиента нажмите любую клавишу");
-                Console.ReadKey();
-                Console.Clear();
-            }
-
-            Console.WriteLine($"Общая выручка - {_revenue}");
-        }
-
-        private void SereveBuyer(IReadOnlyList<Product> allProducts)
-        {
-            Buyer currentBuyer = _buyers.Dequeue();
-            currentBuyer.CreateBascket(allProducts);
-            Console.WriteLine($"У покупателя {currentBuyer.Money} рублей\n");
-            currentBuyer.ShowBasket();
-            currentBuyer.CountPriceAmout();
-
-            while (currentBuyer.Money < currentBuyer.PriceAmount)
-            {
-                Console.WriteLine($"Поккупателю нехванает {currentBuyer.PriceAmount - currentBuyer.Money} рублей");
-                currentBuyer.RemoveRandomProduct();
-            }
-
-            CountRenue(currentBuyer);
-            Console.WriteLine($"С этого клиента вы получили - {currentBuyer.PriceAmount} рублей");
-        }
-
-        private void CountRenue(Buyer currentBuyer)
-        {
-            _revenue += currentBuyer.PriceAmount;
-        }
-
-        private void CreateQueue(int count)
+        public List<Soldier> Create()
         {
             Random random = new Random();
-            int maxMoneyAmount = 800;
-            int minMoneyAmount = 300;
+            List<Soldier> soldiers = new List<Soldier>();
 
-            for (int i = 0; i < count; i++)
-            {
-                _buyers.Enqueue(new Buyer(random.Next(minMoneyAmount, maxMoneyAmount)));
-            }
+            return soldiers;
         }
     }
 
-    class Buyer
+    abstract class Soldier
     {
-        private List<Product> _basket = new List<Product>();
+        protected int Health;
+        protected int MaxHealth;
+        protected int MinHealth;
+        protected int Damage;
+        protected int MaxDamage;
+        protected int MinDamage;
+        protected int Armor;
+        protected int MaxArmor;
+        protected int MinArmor;
+        protected string TroopType;
+        protected string Description;
 
-        public int Money { get; private set; }
-        public int PriceAmount { get; private set; }
+        public int CurrentHealth => Health;
 
-        public Buyer(int money)
+        public abstract void GetDamage(int damage);
+        public abstract int Attack();
+        public void ShowInfo()
         {
-            Money = money;
+            Console.WriteLine($"Тип войск: {TroopType}, урон: {Damage}, здоровье: {Health}, броня: {Armor}\nОписание: {Description}");
+        }                     
+    }
+
+    class StormTrooper : Soldier
+    {
+        public StormTrooper()
+        {
+            MaxHealth = 150;
+            MinHealth = 100;
+            MaxDamage = 40;
+            MinDamage = 30;
+            MaxArmor = 100;
+            MinArmor = 80;
+            Random random = new Random();
+
+            Health = random.Next(MinHealth, MaxHealth);
+            Damage = random.Next(MinDamage, MaxDamage);
+            Armor = random.Next(MinArmor, MaxArmor);
+            TroopType = "Штурмовик";
+            Description = "Обычный боец, имеет средние характеристики";
         }
 
-        public void CreateBascket(IReadOnlyList<Product> allProducts)
+        public override int Attack()
+        {
+            return Damage;
+        }
+
+
+        public override void GetDamage(int damage)
+        {
+            if (Armor > 0)
+                Armor -= damage;
+            else
+                Health -= damage;
+        }       
+    }
+
+    class Sniper : Soldier
+    {
+        public Sniper()
+        {
+            MaxHealth = 100;
+            MinHealth = 80;
+            MaxDamage = 80;
+            MinDamage = 70;
+            MaxArmor = 70;
+            MinArmor = 60;
+            Random random = new Random();
+
+            Health = random.Next(MinHealth, MaxHealth);
+            Damage = random.Next(MinDamage, MaxDamage);
+            Armor = random.Next(MinArmor, MaxArmor);
+            TroopType = "Снайпер";
+            Description = "Имеет достаточно большой урон, но периодически промахивается";
+        }
+
+        public override int Attack()
         {
             Random random = new Random();
-            int maxProductAmount = 10;
-            int minProductAmount = 5;
-            List<Product> basket = new List<Product>();
+            int missValue = 0;
+            int hitValue = 2;
 
-            for (int i = minProductAmount; i <= maxProductAmount; i++)
-            {
-                basket.Add(allProducts[random.Next(0, allProducts.Count)]);
-            }
-
-            _basket = basket;
+            if (random.Next(missValue, hitValue) == missValue)
+                return Damage;
+            else
+                return missValue;
         }
 
-        public void ShowBasket()
+        public override void GetDamage(int damage)
         {
-            Console.WriteLine("В корзине находятся:");
-
-            foreach (var product in _basket)
-            {
-                Console.WriteLine($"Товар {product.Name} по цене {product.Price}");
-            }
-        }
-
-        public void CountPriceAmout()
-        {
-            int currentPriceAmount = 0;
-
-            foreach (var product in _basket)
-            {
-                currentPriceAmount += product.Price;
-            }
-
-            PriceAmount = currentPriceAmount;
-            Console.WriteLine($"\nТекущая цена корзины {PriceAmount}\n");
-        }
-
-        public void RemoveRandomProduct()
-        {
-            Random random = new Random();
-            int randomProductIndex = random.Next(0, _basket.Count - 1);
-
-            Console.WriteLine($"Из корзины убран товар {_basket[randomProductIndex].Name}");
-            PriceAmount -= _basket[randomProductIndex].Price;
-            Console.WriteLine($"Текущая цена корзины {PriceAmount}\n");
-            _basket.RemoveAt(randomProductIndex);
+            if (Armor > 0)
+                Armor -= damage;
+            else
+                Health -= damage;
         }
     }
 
-    class Product
+    class Armored : Soldier
     {
-        private string _name;
-        private int _price;
-
-        public string Name => _name;
-        public int Price => _price;
-
-        public Product(string name, int price)
+        public Armored()
         {
-            _name = name;
-            _price = price;
+            MaxHealth = 200;
+            MinHealth = 150;
+            MaxDamage = 30;
+            MinDamage = 20;
+            MaxArmor = 200;
+            MinArmor = 150;
+            Random random = new Random();
+
+            Health = random.Next(MinHealth, MaxHealth);
+            Damage = random.Next(MinDamage, MaxDamage);
+            Armor = random.Next(MinArmor, MaxArmor);
+            TroopType = "Бронированный";
+            Description = "Имеет больгшие значения здоровья и брони, но небольшой урон";
+        }
+
+        public override int Attack()
+        {
+            return Damage;
+        }
+
+        public override void GetDamage(int damage)
+        {
+            if (Armor > 0)
+                Armor -= damage;
+            else
+                Health -= damage;
         }
     }
 }
