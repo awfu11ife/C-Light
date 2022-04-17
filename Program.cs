@@ -4,315 +4,214 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeWork47
+namespace HomeWork48
 {
     class Program
     {
         static void Main(string[] args)
         {
-            Platoon firstCountryPlatoon = new Platoon(new List<Soldier>(), 1);
-            Platoon secondCountryPlatoon = new Platoon(new List<Soldier>(), 2);
-            Battlefield battlefield = new Battlefield(firstCountryPlatoon, secondCountryPlatoon);
-
-            battlefield.StartBattle();
-        }
-    }
-
-    class Battlefield
-    {
-        private Platoon _firstPlatoon;
-        private Platoon _secondPlatoon;
-
-        public Battlefield(Platoon firstPlatoon, Platoon secondPlatoon)
-        {
-            _firstPlatoon = firstPlatoon;
-            _secondPlatoon = secondPlatoon;
+            CreateAquarium();
         }
 
-        public void StartBattle()
+        static void CreateAquarium()
         {
-            _firstPlatoon.FillPlatoon();
-            _secondPlatoon.FillPlatoon();
-            _firstPlatoon.ShowInfo();
-            Console.ReadKey();
-            Console.Clear();
-            _secondPlatoon.ShowInfo();
-            Console.ReadKey();
-            Console.Clear();
+            bool isCorrectInput;
 
-            while (_firstPlatoon.SoldiersCount > 0 && _secondPlatoon.SoldiersCount > 0)
+            Console.WriteLine("Введите желаемую вместимость аквариума");
+            isCorrectInput = int.TryParse(Console.ReadLine(), out int maxCopacity);
+
+            if (isCorrectInput)
             {
-                for (int i = 0; i < _firstPlatoon.SoldiersCount; i++)
-                {
-                    for (int j = 0; j < _secondPlatoon.SoldiersCount; j++)
-                    {
-                        if (i < _firstPlatoon.SoldiersCount && j < _secondPlatoon.SoldiersCount)
-                        {
-                            _firstPlatoon.ReturnSoldier(i).GetDamage(_secondPlatoon.ReturnSoldier(j).Attack());
-                            _secondPlatoon.ReturnSoldier(j).GetDamage(_firstPlatoon.ReturnSoldier(i).Attack());
-
-                            _firstPlatoon.RemoveTrooper();
-                            _secondPlatoon.RemoveTrooper();
-                        }
-                    }
-                }
-
-                _firstPlatoon.ShowCurrentSrats();
-                Console.WriteLine();
-                _secondPlatoon.ShowCurrentSrats();
-
-                Console.ReadKey();
-                Console.Clear();
-            }
-
-            Console.WriteLine($"В первом взводе осталось {_firstPlatoon.SoldiersCount}");
-            Console.WriteLine($"Во втором взводе осталось {_secondPlatoon.SoldiersCount}");
-        }
-    }
-
-    class Platoon
-    {
-        private List<Soldier> _platoon;
-        private int _number;
-
-        public int SoldiersCount => _platoon.Count;
-
-        public Platoon(List<Soldier> platoon, int number)
-        {
-            _platoon = platoon;
-            _number = number;
-        }
-
-        public void FillPlatoon()
-        {
-            bool isCorrectInput = false;
-
-            while (isCorrectInput == false)
-            {
-                Console.WriteLine($"Вдите количество войск для взвода {_number}");
-                isCorrectInput = (int.TryParse(Console.ReadLine(), out int numberOfSoldiers));
+                Console.WriteLine("Введите кличество рыб, которое хотите заселить");
+                isCorrectInput = int.TryParse(Console.ReadLine(), out int numberOfFish);
 
                 if (isCorrectInput)
                 {
-                    Troops allTroops = new Troops(numberOfSoldiers);
-                    IReadOnlyList<Soldier> tempListSoldiers = allTroops.Create();
+                    Aquarium aquarium = new Aquarium(numberOfFish, maxCopacity);
 
-                    for (int i = 0; i < numberOfSoldiers; i++)
-                    {
-                        _platoon.Add(tempListSoldiers[i]);
-                    }
+                    aquarium.Start();
                 }
                 else
                 {
-                    Console.WriteLine("Вы допустили ошибку при вводе, попробуйте снова");
-                    continue;
+                    Console.WriteLine("Упс, что-то пошло не так...");
                 }
+            }
+            else
+            {
+                Console.WriteLine("Упс, что-то пошло не так...");
+            }
+        }
+    }
+
+    class Aquarium
+    {
+        private int _numberOfFish;
+        private int _maxCapacity;
+        private List<Fish> _allFish;
+
+        public Aquarium(int numberOfFish, int maxCapacity)
+        {
+            _numberOfFish = numberOfFish;
+            _maxCapacity = maxCapacity;
+        }
+
+        public void Start()
+        {
+            const string AddFish = "add";
+            const string RemoveDeadFish = "removedead";
+            const string RemoveFish = "remove";
+            const string ExitCommand = "exit";
+            string userInput = null;
+
+            Create();
+
+            while (userInput != ExitCommand)
+            {
+                ShowAllFish();
+
+                Console.WriteLine($"Вам доступны следующие команды\n" +
+                    $"{AddFish} - добавить случайную рыбу\n" +
+                    $"{RemoveDeadFish} - убрать всех мертвых рыб\n" +
+                    $"{RemoveFish} - убрать рыбу по индексу\n" +
+                    $"{ExitCommand} - Выйти\n" +
+                    $"Enter - пропустить год\n");
+                userInput = Console.ReadLine();
+
+                switch (userInput)
+                {
+                    case AddFish:
+                        this.AddFish();
+                        break;
+
+                    case RemoveDeadFish:
+                        this.RemoveDeadFish();
+                        break;
+
+                    case RemoveFish:
+                        this.RemoveFish();
+                        break;
+
+                    case ExitCommand:
+                        break;
+
+                    default:
+                        SkipYear();
+                        break;
+                }
+            }
+        }
+
+        private void Create()
+        {
+            Random random = new Random();
+            _allFish = new List<Fish>(_maxCapacity);
+
+            if (_allFish.Capacity >= _numberOfFish)
+            {
+                for (int i = 0; i < _numberOfFish; i++)
+                {
+                    _allFish.Add(new Fish(random));
+                }
+            }
+            else
+            {
+                Console.WriteLine($"Для всех рыб нехватило места, добавлено {_maxCapacity} рыб");
+
+                for (int i = 0; i < _maxCapacity; i++)
+                {
+                    _allFish.Add(new Fish(random));
+                }
+            }
+        }
+
+        private void ShowAllFish()
+        {
+            Console.WriteLine("В аквариуме ссейчас находятся:\n");
+            for (int i = 0; i < _allFish.Count; i++)
+            {
+                _allFish[i].ShowInfo(i);
+            }
+            Console.WriteLine();
+        }
+
+        private void RemoveDeadFish()
+        {
+            foreach (var fish in _allFish.ToArray())
+            {
+                if (fish.IsDead == true)
+                    _allFish.Remove(fish);
+            }
+        }
+
+        private void RemoveFish()
+        {
+            Console.WriteLine("Введите номер рыбы, которую хотите удалить");
+            bool isCorrectInput = int.TryParse(Console.ReadLine(), out int number);
+
+            if (isCorrectInput)
+            {
+                if (number >= 0 && number < _allFish.Count)
+                    _allFish.RemoveAt(number);
+                else
+                    Console.WriteLine("Рыбы с таким индексом нет");
+            }
+            else
+            {
+                Console.WriteLine("Упс, что-то пошло не так...");
+            }
+
+        }
+
+        private void AddFish()
+        {
+            if (_allFish.Count < _allFish.Capacity)
+                _allFish.Add(new Fish(new Random()));
+            else
+                Console.WriteLine("В аквариуме уже максимальное число рыб");
+        }
+
+        private void SkipYear()
+        {
+            foreach (var fish in _allFish)
+            {
+                fish.MakeOld();
             }
 
             Console.Clear();
         }
-
-        public Soldier ReturnSoldier(int number)
-        {
-            return _platoon[number];
-        }
-
-        public void RemoveTrooper()
-        {
-            foreach (var soldier in _platoon.ToArray())
-            {
-                if (soldier.CurrentHealth <= 0)
-                {
-                    _platoon.Remove(soldier);
-                    continue;
-                }
-            }
-        }
-
-        public void ShowInfo()
-        {
-            Console.WriteLine($"Во взводе номер {_number} находятся:\n");
-
-            foreach (var soldier in _platoon)
-            {
-                soldier.ShowInfo();
-            }
-        }
-
-        public void ShowCurrentSrats()
-        {
-            Console.WriteLine($"Текущие показатели взвода номер {_number}:\n");
-
-            foreach (var soldier in _platoon)
-            {
-                Console.WriteLine($"У солдата {soldier.CurrentTroopType} здоровье равно {soldier.CurrentHealth}");
-            }
-        }
     }
 
-    class Troops
+    class Fish
     {
-        private int _numberOfSoldiers;
-        private int _soldiersTypeCount = 3;
+        private int _age;
+        private int _deathAge;
 
-        public Troops(int numberOfSoldiers)
+        public bool IsDead => _age >= _deathAge;
+
+        public int Age => _age;
+
+        public Fish(Random random)
         {
-            _numberOfSoldiers = numberOfSoldiers;
+            int maxAge = 5;
+            int minAge = 1;
+            int maxDeathAge = 12;
+            int minDeathAge = 8;
+
+            _age = random.Next(minAge, maxAge);
+            _deathAge = random.Next(minDeathAge, maxDeathAge);
         }
 
-        public IReadOnlyList<Soldier> Create()
+        public void ShowInfo(int number)
         {
-            Random random = new Random();
-            List<Soldier> soldiers = new List<Soldier>();
-
-            for (int i = 0; i < _numberOfSoldiers; i++)
-            {
-                switch (random.Next(0, _soldiersTypeCount))
-                {
-                    case 0:
-                        soldiers.Add(new StormTrooper(random));
-                        break;
-
-                    case 1:
-                        soldiers.Add(new Sniper(random));
-                        break;
-
-                    case 2:
-                        soldiers.Add(new Armored(random));
-                        break;
-                }
-            }
-
-            return soldiers;
-        }
-    }
-
-    abstract class Soldier
-    {
-        protected int Health;
-        protected int MaxHealth;
-        protected int MinHealth;
-        protected int Damage;
-        protected int MaxDamage;
-        protected int MinDamage;
-        protected int Armor;
-        protected int MaxArmor;
-        protected int MinArmor;
-        protected string TroopType;
-        protected string Description;
-
-        public int CurrentHealth => Health;
-        public string CurrentTroopType => TroopType;
-
-        public abstract void GetDamage(int damage);
-        public abstract int Attack();
-        public void ShowInfo()
-        {
-            Console.WriteLine($"Тип войск: {TroopType}, урон: {Damage}, здоровье: {Health}, броня: {Armor}\nОписание: {Description}");
-        }
-    }
-
-    class StormTrooper : Soldier
-    {
-        public StormTrooper(Random random)
-        {
-            MaxHealth = 150;
-            MinHealth = 100;
-            MaxDamage = 40;
-            MinDamage = 30;
-            MaxArmor = 100;
-            MinArmor = 80;
-
-            Health = random.Next(MinHealth, MaxHealth);
-            Damage = random.Next(MinDamage, MaxDamage);
-            Armor = random.Next(MinArmor, MaxArmor);
-            TroopType = "Штурмовик";
-            Description = "Обычный боец, имеет средние характеристики";
-        }
-
-        public override int Attack()
-        {
-            return Damage;
-        }
-
-
-        public override void GetDamage(int damage)
-        {
-            if (Armor > 0)
-                Armor -= damage;
+            if (IsDead == false)
+                Console.WriteLine($"Рыба {number} - {_age} лет");
             else
-                Health -= damage;
-        }
-    }
-
-    class Sniper : Soldier
-    {
-        public Sniper(Random random)
-        {
-            MaxHealth = 100;
-            MinHealth = 80;
-            MaxDamage = 80;
-            MinDamage = 70;
-            MaxArmor = 70;
-            MinArmor = 60;
-
-            Health = random.Next(MinHealth, MaxHealth);
-            Damage = random.Next(MinDamage, MaxDamage);
-            Armor = random.Next(MinArmor, MaxArmor);
-            TroopType = "Снайпер";
-            Description = "Имеет достаточно большой урон, но периодически промахивается";
+                Console.WriteLine($"Рыба {number} - умерла");
         }
 
-        public override int Attack()
+        public void MakeOld()
         {
-            Random random = new Random();
-            int missValue = 0;
-            int hitValue = 2;
-
-            if (random.Next(missValue, hitValue) == missValue)
-                return Damage;
-            else
-                return missValue;
-        }
-
-        public override void GetDamage(int damage)
-        {
-            if (Armor > 0)
-                Armor -= damage;
-            else
-                Health -= damage;
-        }
-    }
-
-    class Armored : Soldier
-    {
-        public Armored(Random random)
-        {
-            MaxHealth = 200;
-            MinHealth = 150;
-            MaxDamage = 30;
-            MinDamage = 20;
-            MaxArmor = 200;
-            MinArmor = 150;
-
-            Health = random.Next(MinHealth, MaxHealth);
-            Damage = random.Next(MinDamage, MaxDamage);
-            Armor = random.Next(MinArmor, MaxArmor);
-            TroopType = "Бронированный";
-            Description = "Имеет большие значения здоровья и брони, но небольшой урон";
-        }
-
-        public override int Attack()
-        {
-            return Damage;
-        }
-
-        public override void GetDamage(int damage)
-        {
-            if (Armor > 0)
-                Armor -= damage;
-            else
-                Health -= damage;
+            _age++;
         }
     }
 }
