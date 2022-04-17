@@ -10,104 +10,86 @@ namespace HomeWork47
     {
         static void Main(string[] args)
         {
-            Battlefield battlefield = new Battlefield(new List<Soldier>(), new List<Soldier>());     
+            Platoon firstCountryPlatoon = new Platoon(new List<Soldier>(), 1);
+            Platoon secondCountryPlatoon = new Platoon(new List<Soldier>(), 2);
+            Battlefield battlefield = new Battlefield(firstCountryPlatoon, secondCountryPlatoon);
+
+            battlefield.StartBattle();
         }
     }
 
     class Battlefield
     {
-        public Battlefield(List<Soldier> firstPlatoon, List<Soldier> secondPlatoon)
+        private Platoon _firstPlatoon;
+        private Platoon _secondPlatoon;
+
+        public Battlefield(Platoon firstPlatoon, Platoon secondPlatoon)
         {
-            ShowInfo(firstPlatoon, secondPlatoon);
-            StartBattle(firstPlatoon, secondPlatoon);
+            _firstPlatoon = firstPlatoon;
+            _secondPlatoon = secondPlatoon;
         }
 
-        private void ShowInfo(List<Soldier> firstContryPlatoon, List<Soldier> secondContryPlatoon)
+        public void StartBattle()
         {
-            Platoon platoon = new Platoon();
-            platoon.FillPlatoon(firstContryPlatoon);
-            platoon.FillPlatoon(secondContryPlatoon);
-
-            Console.WriteLine("В первом взводе находятся:\n");
-
-            foreach (var soldier in firstContryPlatoon)
-            {
-                soldier.ShowInfo();
-            }
-
+            _firstPlatoon.FillPlatoon();
+            _secondPlatoon.FillPlatoon();
+            _firstPlatoon.ShowInfo();
             Console.ReadKey();
             Console.Clear();
-            Console.WriteLine("Во втором взводе находятся\n");
-
-            foreach (var soldier in secondContryPlatoon)
-            {
-                soldier.ShowInfo();
-            }
-
+            _secondPlatoon.ShowInfo();
             Console.ReadKey();
             Console.Clear();
-        }
 
-        private void StartBattle(List<Soldier> firstContryPlatoon, List<Soldier> secondContryPlatoon)
-        {
-            while (firstContryPlatoon.Count > 0 && secondContryPlatoon.Count > 0)
+            while (_firstPlatoon.SoldiersCount > 0 && _secondPlatoon.SoldiersCount > 0)
             {
-                for (int i = 0; i < firstContryPlatoon.Count; i++)
+                for (int i = 0; i < _firstPlatoon.SoldiersCount; i++)
                 {
-                    for (int j = 0; j < secondContryPlatoon.Count; j++)
+                    for (int j = 0; j < _secondPlatoon.SoldiersCount; j++)
                     {
-                        if (i < firstContryPlatoon.Count && j < secondContryPlatoon.Count)
+                        if (i < _firstPlatoon.SoldiersCount && j < _secondPlatoon.SoldiersCount)
                         {
-                            firstContryPlatoon[i].GetDamage(secondContryPlatoon[j].Attack());
-                            secondContryPlatoon[j].GetDamage(firstContryPlatoon[i].Attack());
+                            _firstPlatoon.ReturnSoldier(i).GetDamage(_secondPlatoon.ReturnSoldier(j).Attack());
+                            _secondPlatoon.ReturnSoldier(j).GetDamage(_firstPlatoon.ReturnSoldier(i).Attack());
 
-                            if (firstContryPlatoon[i].CurrentHealth <= 0)
-                            {
-                                firstContryPlatoon.RemoveAt(i);
-                                continue;
-                            }
-
-                            if (secondContryPlatoon[j].CurrentHealth <= 0)
-                            {
-                                secondContryPlatoon.RemoveAt(j);
-                                continue;
-                            }
+                            _firstPlatoon.RemoveTrooper();
+                            _secondPlatoon.RemoveTrooper();
                         }
                     }
                 }
 
-                Console.WriteLine($"Текущие показатели первого взвода:\n");
-
-                foreach (var soldier in firstContryPlatoon)
-                {
-                    Console.WriteLine($"Тип войск - {soldier.CurrentTroopType}, здоровье - {soldier.CurrentHealth}");
-                }
-
-                Console.WriteLine($"\nТекущие показатели вторго взвода:\n");
-
-                foreach (var soldier in secondContryPlatoon)
-                {
-                    Console.WriteLine($"Тип войск - {soldier.CurrentTroopType}, здоровье - {soldier.CurrentHealth}");
-                }
+                _firstPlatoon.ShowCurrentSrats();
+                Console.WriteLine();
+                _secondPlatoon.ShowCurrentSrats();
 
                 Console.ReadKey();
                 Console.Clear();
             }
 
-            Console.WriteLine($"В первом взводе осталось {firstContryPlatoon.Count}");
-            Console.WriteLine($"Во втором взводе осталось {secondContryPlatoon.Count}");
+            Console.WriteLine($"В первом взводе осталось {_firstPlatoon.SoldiersCount}");
+            Console.WriteLine($"Во втором взводе осталось {_secondPlatoon.SoldiersCount}");
         }
     }
 
     class Platoon
     {
-        public void FillPlatoon(List<Soldier> platoon)
+        private List<Soldier> _platoon;
+        private int _number;
+
+        public int SoldiersCount => _platoon.Count;
+
+        public Platoon(List<Soldier> platoon, int number)
+        {
+            _platoon = platoon;
+            _number = number;
+        }
+
+        public void FillPlatoon()
         {
             bool isCorrectInput = false;
 
             while (isCorrectInput == false)
             {
-                Console.WriteLine($"Вдите количество войск для взводов");
+                Console.WriteLine($"Вдите количество войск для взвода {_number}");
                 isCorrectInput = (int.TryParse(Console.ReadLine(), out int numberOfSoldiers));
 
                 if (isCorrectInput)
@@ -117,7 +99,7 @@ namespace HomeWork47
 
                     for (int i = 0; i < numberOfSoldiers; i++)
                     {
-                        platoon.Add(tempListSoldiers[i]);
+                        _platoon.Add(tempListSoldiers[i]);
                     }
                 }
                 else
@@ -128,6 +110,43 @@ namespace HomeWork47
             }
 
             Console.Clear();
+        }
+
+        public Soldier ReturnSoldier(int number)
+        {
+            return _platoon[number];
+        }
+
+        public void RemoveTrooper()
+        {
+            foreach (var soldier in _platoon.ToArray())
+            {
+                if (soldier.CurrentHealth <= 0)
+                {
+                    _platoon.Remove(soldier);
+                    continue;
+                }
+            }
+        }
+
+        public void ShowInfo()
+        {
+            Console.WriteLine($"Во взводе номер {_number} находятся:\n");
+
+            foreach (var soldier in _platoon)
+            {
+                soldier.ShowInfo();
+            }
+        }
+
+        public void ShowCurrentSrats()
+        {
+            Console.WriteLine($"Текущие показатели взвода номер {_number}:\n");
+
+            foreach (var soldier in _platoon)
+            {
+                Console.WriteLine($"У солдата {soldier.CurrentTroopType} здоровье равно {soldier.CurrentHealth}");
+            }
         }
     }
 
@@ -280,7 +299,7 @@ namespace HomeWork47
             Damage = random.Next(MinDamage, MaxDamage);
             Armor = random.Next(MinArmor, MaxArmor);
             TroopType = "Бронированный";
-            Description = "Имеет больгшие значения здоровья и брони, но небольшой урон";
+            Description = "Имеет большие значения здоровья и брони, но небольшой урон";
         }
 
         public override int Attack()
