@@ -10,54 +10,24 @@ namespace HomeWork47
     {
         static void Main(string[] args)
         {
-            Battlefield battlefield = new Battlefield();
-            battlefield.CreatePlatoon();
-            battlefield.ShowInfo();
-            battlefield.StartBattle();
+            Battlefield battlefield = new Battlefield(new List<Soldier>(), new List<Soldier>());     
         }
     }
 
     class Battlefield
     {
-        private List<Soldier> firstContryPlatoon = new List<Soldier>();
-        private List<Soldier> secondContryPlatoon = new List<Soldier>();
-
-        public void CreatePlatoon()
+        public Battlefield(List<Soldier> firstPlatoon, List<Soldier> secondPlatoon)
         {
-            bool isCorrectInput = false;
-
-            while (isCorrectInput == false)
-            {
-                Console.WriteLine("Вдите количество войск, которое должно быть на поле боя, число дожно быть чётное");
-                isCorrectInput = (int.TryParse(Console.ReadLine(), out int numberOfSoldiers) && numberOfSoldiers % 2 == 0);
-
-                if (isCorrectInput)
-                {
-                    Platoon platoon = new Platoon(numberOfSoldiers);
-                    List<Soldier> tempListSoldiers = platoon.Create();
-
-                    for (int i = 0; i < numberOfSoldiers / 2; i++)
-                    {
-                        firstContryPlatoon.Add(tempListSoldiers[i]);
-                    }
-
-                    for (int i = numberOfSoldiers - 1; i >= numberOfSoldiers / 2; i--)
-                    {
-                        secondContryPlatoon.Add(tempListSoldiers[i]);
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Вы допустили ошибку при вводе, попробуйте снова");
-                    continue;
-                }
-            }
-
-            Console.Clear();
+            ShowInfo(firstPlatoon, secondPlatoon);
+            StartBattle(firstPlatoon, secondPlatoon);
         }
 
-        public void ShowInfo()
+        private void ShowInfo(List<Soldier> firstContryPlatoon, List<Soldier> secondContryPlatoon)
         {
+            Platoon platoon = new Platoon();
+            platoon.FillPlatoon(firstContryPlatoon);
+            platoon.FillPlatoon(secondContryPlatoon);
+
             Console.WriteLine("В первом взводе находятся:\n");
 
             foreach (var soldier in firstContryPlatoon)
@@ -78,7 +48,7 @@ namespace HomeWork47
             Console.Clear();
         }
 
-        public void StartBattle()
+        private void StartBattle(List<Soldier> firstContryPlatoon, List<Soldier> secondContryPlatoon)
         {
             while (firstContryPlatoon.Count > 0 && secondContryPlatoon.Count > 0)
             {
@@ -131,15 +101,47 @@ namespace HomeWork47
 
     class Platoon
     {
+        public void FillPlatoon(List<Soldier> platoon)
+        {
+            bool isCorrectInput = false;
+
+            while (isCorrectInput == false)
+            {
+                Console.WriteLine($"Вдите количество войск для взводов");
+                isCorrectInput = (int.TryParse(Console.ReadLine(), out int numberOfSoldiers));
+
+                if (isCorrectInput)
+                {
+                    Troops allTroops = new Troops(numberOfSoldiers);
+                    IReadOnlyList<Soldier> tempListSoldiers = allTroops.Create();
+
+                    for (int i = 0; i < numberOfSoldiers; i++)
+                    {
+                        platoon.Add(tempListSoldiers[i]);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Вы допустили ошибку при вводе, попробуйте снова");
+                    continue;
+                }
+            }
+
+            Console.Clear();
+        }
+    }
+
+    class Troops
+    {
         private int _numberOfSoldiers;
         private int _soldiersTypeCount = 3;
 
-        public Platoon(int numberOfSoldiers)
+        public Troops(int numberOfSoldiers)
         {
             _numberOfSoldiers = numberOfSoldiers;
         }
 
-        public List<Soldier> Create()
+        public IReadOnlyList<Soldier> Create()
         {
             Random random = new Random();
             List<Soldier> soldiers = new List<Soldier>();
