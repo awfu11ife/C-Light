@@ -4,214 +4,107 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeWork48
+namespace HomeWork49
 {
     class Program
     {
         static void Main(string[] args)
         {
-            CreateAquarium();
+            Aviary aviary = new Aviary(6);
+
+            aviary.Show();
+        }
+    }
+
+    class Zoo
+    {
+
+    }
+
+    class Aviary
+    {
+        private List<Animal> _animals = new List<Animal>();
+
+        public Aviary (uint numberOfAnimals)
+        {
+            Create<Lion>(numberOfAnimals);
         }
 
-        static void CreateAquarium()
+        private void Create<T>(uint mumberOfAnimals) where T : Animal
         {
-            bool isCorrectInput;
-
-            Console.WriteLine("Введите желаемую вместимость аквариума");
-            isCorrectInput = int.TryParse(Console.ReadLine(), out int maxCopacity);
-
-            if (isCorrectInput)
+            for (uint i = 0; i < mumberOfAnimals; i++)
             {
-                Console.WriteLine("Введите кличество рыб, которое хотите заселить");
-                isCorrectInput = int.TryParse(Console.ReadLine(), out int numberOfFish);
-
-                if (isCorrectInput)
-                {
-                    Aquarium aquarium = new Aquarium(numberOfFish, maxCopacity);
-
-                    aquarium.Start();
-                }
-                else
-                {
-                    Console.WriteLine("Упс, что-то пошло не так...");
-                }
+                _animals.Add(new Animal(new Random()) as T);
             }
-            else
+        }
+
+        public void Show()
+        {
+            foreach (var item in _animals)
             {
-                Console.WriteLine("Упс, что-то пошло не так...");
+                item.MakeNoise();
             }
         }
     }
 
-    class Aquarium
+    class Animal
     {
-        private int _numberOfFish;
-        private int _maxCapacity;
-        private List<Fish> _allFish;
+        public  string AnimalKind { get; protected set; }
+        public string AnimalGender { get; protected set; }
+        public string AnimalSound { get; protected set; }
 
-        public Aquarium(int numberOfFish, int maxCapacity)
+        private List<string> AnimalGenderType = new List<string> { "мужской", "женский" };
+
+        public Animal(Random random)
         {
-            _numberOfFish = numberOfFish;
-            _maxCapacity = maxCapacity;
+            SetGender(random);
+        } 
+
+        public void MakeNoise()
+        {
+            Console.WriteLine(AnimalSound);
         }
 
-        public void Start()
+        private void SetGender(Random random)
         {
-            const string AddFish = "add";
-            const string RemoveDeadFish = "removedead";
-            const string RemoveFish = "remove";
-            const string ExitCommand = "exit";
-            string userInput = null;
-
-            Create();
-
-            while (userInput != ExitCommand)
-            {
-                ShowAllFish();
-
-                Console.WriteLine($"Вам доступны следующие команды\n" +
-                    $"{AddFish} - добавить случайную рыбу\n" +
-                    $"{RemoveDeadFish} - убрать всех мертвых рыб\n" +
-                    $"{RemoveFish} - убрать рыбу по индексу\n" +
-                    $"{ExitCommand} - Выйти\n" +
-                    $"Enter - пропустить год\n");
-                userInput = Console.ReadLine();
-
-                switch (userInput)
-                {
-                    case AddFish:
-                        this.AddFish();
-                        break;
-
-                    case RemoveDeadFish:
-                        this.RemoveDeadFish();
-                        break;
-
-                    case RemoveFish:
-                        this.RemoveFish();
-                        break;
-
-                    case ExitCommand:
-                        break;
-
-                    default:
-                        SkipYear();
-                        break;
-                }
-            }
-        }
-
-        private void Create()
-        {
-            Random random = new Random();
-            _allFish = new List<Fish>(_maxCapacity);
-
-            if (_allFish.Capacity >= _numberOfFish)
-            {
-                for (int i = 0; i < _numberOfFish; i++)
-                {
-                    _allFish.Add(new Fish(random));
-                }
-            }
-            else
-            {
-                Console.WriteLine($"Для всех рыб нехватило места, добавлено {_maxCapacity} рыб");
-
-                for (int i = 0; i < _maxCapacity; i++)
-                {
-                    _allFish.Add(new Fish(random));
-                }
-            }
-        }
-
-        private void ShowAllFish()
-        {
-            Console.WriteLine("В аквариуме ссейчас находятся:\n");
-            for (int i = 0; i < _allFish.Count; i++)
-            {
-                _allFish[i].ShowInfo(i);
-            }
-            Console.WriteLine();
-        }
-
-        private void RemoveDeadFish()
-        {
-            foreach (var fish in _allFish.ToArray())
-            {
-                if (fish.IsDead == true)
-                    _allFish.Remove(fish);
-            }
-        }
-
-        private void RemoveFish()
-        {
-            Console.WriteLine("Введите номер рыбы, которую хотите удалить");
-            bool isCorrectInput = int.TryParse(Console.ReadLine(), out int number);
-
-            if (isCorrectInput)
-            {
-                if (number >= 0 && number < _allFish.Count)
-                    _allFish.RemoveAt(number);
-                else
-                    Console.WriteLine("Рыбы с таким индексом нет");
-            }
-            else
-            {
-                Console.WriteLine("Упс, что-то пошло не так...");
-            }
-
-        }
-
-        private void AddFish()
-        {
-            if (_allFish.Count < _allFish.Capacity)
-                _allFish.Add(new Fish(new Random()));
-            else
-                Console.WriteLine("В аквариуме уже максимальное число рыб");
-        }
-
-        private void SkipYear()
-        {
-            foreach (var fish in _allFish)
-            {
-                fish.MakeOld();
-            }
-
-            Console.Clear();
+            int numberOfGender = random.Next(0, AnimalGenderType.Count);
+            AnimalGender = AnimalGenderType[numberOfGender];
         }
     }
 
-    class Fish
+    class Lion : Animal
     {
-        private int _age;
-        private int _deathAge;
-
-        public bool IsDead => _age >= _deathAge;
-
-        public int Age => _age;
-
-        public Fish(Random random)
+        public Lion() : base (new Random())
         {
-            int maxAge = 5;
-            int minAge = 1;
-            int maxDeathAge = 12;
-            int minDeathAge = 8;
-
-            _age = random.Next(minAge, maxAge);
-            _deathAge = random.Next(minDeathAge, maxDeathAge);
+            AnimalKind = "Лев";
+            AnimalSound = "РррРрРрРРр";
         }
+    }
 
-        public void ShowInfo(int number)
+    class Giraffe : Animal
+    {
+        public Giraffe() : base(new Random())
         {
-            if (IsDead == false)
-                Console.WriteLine($"Рыба {number} - {_age} лет");
-            else
-                Console.WriteLine($"Рыба {number} - умерла");
+            AnimalKind = "Жираф";
+            AnimalSound = "*Звуки жирафов*";
         }
+    }
 
-        public void MakeOld()
+    class Parrot : Animal
+    {
+        public Parrot() : base(new Random())
         {
-            _age++;
+            AnimalKind = "Попугай";
+            AnimalSound = "Чирик-чирик";
+        }
+    }
+
+    class Monkey : Animal
+    {
+        public Monkey() : base(new Random())
+        {
+            AnimalKind = "Обезьяна";
+            AnimalSound = "*Крик обезьян*";
         }
     }
 }
