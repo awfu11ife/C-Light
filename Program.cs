@@ -15,22 +15,28 @@ namespace HomeWork49
 
         static void GoToZoo()
         {
-            Zoo zoo = new Zoo();
+            const int Exit = 10;
             int? userInput = null;
             bool isCorrectInput;
+            Zoo zoo = new Zoo();
 
             Console.WriteLine("Добро пожаовать в наш зоопарк!\n");
 
-            while (true)
+            while (userInput != Exit)
             {
                 zoo.ShowAllAviaries();
+                Console.WriteLine($"{Exit} - уйти из зоопарка");
                 Console.WriteLine("\nВведите номер вольера, к которому хотите подойти");
 
                 isCorrectInput = int.TryParse(Console.ReadLine(), out int number);
+                userInput = number;
 
                 if (isCorrectInput)
                 {
-                    zoo.ComeToAviary(number);
+                    if (userInput != Exit)
+                        zoo.ComeToAviary(number);
+                    else
+                        Console.WriteLine("До новых встреч!");
                 }
                 else
                 {
@@ -71,8 +77,8 @@ namespace HomeWork49
 
     class Aviary
     {
-        private List<Animal> _animals = new List<Animal>();
         private string _animalSound;
+        private List<Animal> _animals = new List<Animal>();
 
         public string AnimalType { get; private set; }
 
@@ -81,16 +87,6 @@ namespace HomeWork49
             AnimalType = animalType.ToString();
             _animalSound = animalSound.ToString();
             Create(numberOfAnimals);
-        }
-
-        private void Create(uint mumberOfAnimals)
-        {
-            Random random = new Random();
-
-            for (uint i = 0; i < mumberOfAnimals; i++)
-            {
-                _animals.Add(new Animal(random, AnimalType, _animalSound));
-            }
         }
 
         public void ShowInfo()
@@ -112,17 +108,28 @@ namespace HomeWork49
 
             Console.WriteLine($"В вольере находтся {numberOfMaleIndividuals} особей мужского пола и  {numberOfFemaleIndividuals} особей женского пола, они издают звук {_animalSound}");
         }
+
+        private void Create(uint mumberOfAnimals)
+        {
+            Random random = new Random();
+
+            for (uint i = 0; i < mumberOfAnimals; i++)
+            {
+                _animals.Add(new Animal(random, AnimalType, _animalSound));
+            }
+        }
     }
 
     class Animal
     {
         public const string Male = "Мужской";
         public const string Female = "Женский";
+
         public string AnimalType { get; protected set; }
         public string AnimalGender { get; protected set; }
         public string AnimalSound { get; protected set; }
 
-        private List<string> AnimalGenderType = new List<string> { Male, Female };
+        private List<string> _animalGenderType = new List<string> { Male, Female };
 
         public Animal(Random random, string animalType, string animalSound)
         {
@@ -138,8 +145,8 @@ namespace HomeWork49
 
         private void SetGender(Random random)
         {
-            int numberOfGender = random.Next(0, AnimalGenderType.Count);
-            AnimalGender = AnimalGenderType[numberOfGender];
+            int numberOfGender = random.Next(0, _animalGenderType.Count);
+            AnimalGender = _animalGenderType[numberOfGender];
         }
     }
 
