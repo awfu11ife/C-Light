@@ -10,55 +10,126 @@ namespace HomeWork49
     {
         static void Main(string[] args)
         {
-            Aviary aviary = new Aviary(6);
+            GoToZoo();
+        }
 
-            aviary.Show();
+        static void GoToZoo()
+        {
+            Zoo zoo = new Zoo();
+            int? userInput = null;
+            bool isCorrectInput;
+
+            Console.WriteLine("Добро пожаовать в наш зоопарк!\n");
+
+            while (true)
+            {
+                zoo.ShowAllAviaries();
+                Console.WriteLine("\nВведите номер вольера, к которому хотите подойти");
+
+                isCorrectInput = int.TryParse(Console.ReadLine(), out int number);
+
+                if (isCorrectInput)
+                {
+                    zoo.ComeToAviary(number);
+                }
+                else
+                {
+                    Console.WriteLine("Упс, что-то пошло не так");
+                }
+            }
         }
     }
 
     class Zoo
     {
+        private List<Aviary> _aviaries = new List<Aviary> { new Aviary(10, AnimalType.Львы, AnimalSound.РрРрРррРр), new Aviary(8, AnimalType.Жирафы, AnimalSound.ЗвукиЖирафов), new Aviary(15, AnimalType.Попугаи, AnimalSound.ЧирикЧирик), new Aviary(4, AnimalType.Обезьяны, AnimalSound.КрикОбезьян) };
 
+        public void ShowAllAviaries()
+        {
+            Console.WriteLine("У нас есть следующие вольеры:\n");
+
+            for (int i = 0; i < _aviaries.Count; i++)
+            {
+                Console.WriteLine($"{i} - В нем сидят {_aviaries[i].AnimalType}");
+            }
+        }
+
+        public void ComeToAviary(int numberOfAviary)
+        {
+            if (numberOfAviary < _aviaries.Count && numberOfAviary >= 0)
+            {
+                _aviaries[numberOfAviary].ShowInfo();
+            }
+            else
+            {
+                Console.WriteLine("Упс, что-то пошло не так");
+            }
+
+            Console.ReadKey();
+        }
     }
 
     class Aviary
     {
         private List<Animal> _animals = new List<Animal>();
+        private string _animalSound;
 
-        public Aviary (uint numberOfAnimals)
+        public string AnimalType { get; private set; }
+
+        public Aviary(uint numberOfAnimals, Enum animalType, Enum animalSound)
         {
-            Create<Lion>(numberOfAnimals);
+            AnimalType = animalType.ToString();
+            _animalSound = animalSound.ToString();
+            Create(numberOfAnimals);
         }
 
-        private void Create<T>(uint mumberOfAnimals) where T : Animal
+        private void Create(uint mumberOfAnimals)
         {
+            Random random = new Random();
+
             for (uint i = 0; i < mumberOfAnimals; i++)
             {
-                _animals.Add(new Animal(new Random()) as T);
+                _animals.Add(new Animal(random, AnimalType, _animalSound));
             }
         }
 
-        public void Show()
+        public void ShowInfo()
         {
-            foreach (var item in _animals)
+            int numberOfMaleIndividuals = 0;
+            int numberOfFemaleIndividuals = 0;
+
+            foreach (var animal in _animals)
             {
-                item.MakeNoise();
+                if (animal.AnimalGender == Animal.Male)
+                {
+                    numberOfMaleIndividuals++;
+                }
+                else
+                {
+                    numberOfFemaleIndividuals++;
+                }
             }
+
+            Console.WriteLine($"В вольере находтся {numberOfMaleIndividuals} особей мужского пола и  {numberOfFemaleIndividuals} особей женского пола, они издают звук {_animalSound}");
         }
     }
 
     class Animal
     {
-        public  string AnimalKind { get; protected set; }
+        public const string Male = "Мужской";
+        public const string Female = "Женский";
+        public string AnimalType { get; protected set; }
         public string AnimalGender { get; protected set; }
         public string AnimalSound { get; protected set; }
 
-        private List<string> AnimalGenderType = new List<string> { "мужской", "женский" };
+        private List<string> AnimalGenderType = new List<string> { Male, Female };
 
-        public Animal(Random random)
+        public Animal(Random random, string animalType, string animalSound)
         {
+            AnimalType = animalType;
+            AnimalSound = animalSound;
             SetGender(random);
-        } 
+        }
 
         public void MakeNoise()
         {
@@ -72,39 +143,19 @@ namespace HomeWork49
         }
     }
 
-    class Lion : Animal
+    enum AnimalType
     {
-        public Lion() : base (new Random())
-        {
-            AnimalKind = "Лев";
-            AnimalSound = "РррРрРрРРр";
-        }
+        Львы,
+        Жирафы,
+        Попугаи,
+        Обезьяны
     }
 
-    class Giraffe : Animal
+    enum AnimalSound
     {
-        public Giraffe() : base(new Random())
-        {
-            AnimalKind = "Жираф";
-            AnimalSound = "*Звуки жирафов*";
-        }
-    }
-
-    class Parrot : Animal
-    {
-        public Parrot() : base(new Random())
-        {
-            AnimalKind = "Попугай";
-            AnimalSound = "Чирик-чирик";
-        }
-    }
-
-    class Monkey : Animal
-    {
-        public Monkey() : base(new Random())
-        {
-            AnimalKind = "Обезьяна";
-            AnimalSound = "*Крик обезьян*";
-        }
+        РрРрРррРр,
+        ЗвукиЖирафов,
+        ЧирикЧирик,
+        КрикОбезьян
     }
 }
