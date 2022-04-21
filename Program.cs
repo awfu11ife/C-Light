@@ -4,176 +4,175 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeWork50
+namespace HomeWork51
 {
     class Program
     {
         static void Main(string[] args)
         {
-            IReadOnlyDictionary<string, int> allDetaisType = new Dictionary<string, int> { { "Двигатель", 300 }, { "Коробка передач", 200 }, { "Тормоза", 100 } };
-
-            StartCarServing(allDetaisType);
+            StartWork();
         }
 
-        static void StartCarServing(IReadOnlyDictionary<string, int> allDetails)
+        static void StartWork()
         {
-            const string StopWorkCommand = "stop";
+            const string ShowAllCriminals = "showall";
+            const string Search = "search";
+            const string ExitCommand = "exit";
             string userInput = null;
-            CarService carService = new CarService(allDetails, 20);
+            DataBase dataBase = new DataBase(20);
 
-            while (userInput != StopWorkCommand)
+            Console.WriteLine("Добро пожаловать в базу данных преступников\n");
+
+            while (userInput != ExitCommand)
             {
-                carService.ShowWarehouse();
-                Console.WriteLine($"\nНа вамеи счету сейчас {carService.CurrentRevenue} рублей");
-                Console.WriteLine($"Введите 'Enter', чтобы обслужить следующего клиента, или  {StopWorkCommand}, чтобы завершить рабочий день");
+                Console.WriteLine($"Вам доступны следующие команды\n" +
+                    $"{ShowAllCriminals} - показать всю базу данных\n" +
+                    $"{Search} - найти по параметрам\n" +
+                    $"{ExitCommand} - выйти\n");
+                Console.WriteLine();
                 userInput = Console.ReadLine();
 
-                if (userInput != StopWorkCommand)
+                switch (userInput)
                 {
-                    carService.ServeVisitor(new Visitor(allDetails));
-                    Console.ReadKey();
-                    Console.Clear();
-                }
-                else
-                {
-                    Console.Clear();
-                    Console.WriteLine($"День окончен, общая выручка - {carService.CurrentRevenue}");
-                    break;
+                    case ShowAllCriminals:
+                        dataBase.ShowAllCriminals();
+                        break;
+
+                    case Search:
+                        dataBase.ShowCriminalsByParameters();
+                        break;
+
+                    case ExitCommand:
+                        break;
+
+                    default:
+                        Console.WriteLine("Такой команды нет, попробуйте езё раз");
+                        break;
                 }
             }
         }
     }
 
-    class CarService
+    class DataBase
     {
-        private List<Detail> _warehouse = new List<Detail>();
-        private int _revenue = 0;
+        private LinkedList<Criminal> _criminals = new LinkedList<Criminal>();
 
-        public int CurrentRevenue => _revenue;
-
-        public CarService(IReadOnlyDictionary<string, int> allDetailsType, int numberOfDetails)
+        public DataBase(int count)
         {
-            FillWarehouse(allDetailsType, numberOfDetails);
+            Create(count);
         }
 
-        public void ServeVisitor(Visitor visitor)
+        public void ShowAllCriminals()
         {
-            const string NotServeVisitorCommand = "sorry";
-            const int NotServeFine = 150;
-            const int WrongDetailFine = 300;
-            const int WorkPay = 500;
-            string userInput = null;
+            foreach (var criminal in _criminals)
+            {
+                criminal.ShowInfo();
+            }
+
+            Console.ReadKey();
+            Console.Clear();
+        }
+
+        public void ShowCriminalsByParameters()
+        {
+            int targetMaxHeight;
+            int targetMinHeight;
+            int targetMaxWeight;
+            int targetMinWeight;
+            string targetNationality;
             bool isCorrectInput;
 
-            Console.WriteLine($"У посетителя поломка - {visitor.BrokenDetailName}\n");
-            Console.WriteLine($"Введите номер детали, которую хотите поставить клиенту, либо {NotServeVisitorCommand}, чтобы не обсуживать его");
+            Console.WriteLine("Введите максимальный и минимальный рост");
+            isCorrectInput = int.TryParse(Console.ReadLine(), out targetMaxHeight);
 
-            userInput = Console.ReadLine();
-
-            if (userInput == NotServeVisitorCommand)
+            if (isCorrectInput)
             {
-                Console.WriteLine($"Клиент ушел, вы заплатили штраф {NotServeFine}");
-                PayFine(NotServeFine);
-            }
-            else
-            {
-                isCorrectInput = int.TryParse(userInput, out int numberOfDetail);
+                isCorrectInput = int.TryParse(Console.ReadLine(), out targetMinHeight);
 
                 if (isCorrectInput)
                 {
-                    bool isCorrectDetail;
+                    Console.WriteLine("Введите максимальный и минимальный вес");
+                    isCorrectInput = int.TryParse(Console.ReadLine(), out targetMaxWeight);
 
-                    if (numberOfDetail >= 0 && numberOfDetail < _warehouse.Count)
+                    if (isCorrectInput)
                     {
-                        isCorrectDetail = visitor.CheckDetailCorrectness(_warehouse[numberOfDetail].Name);
+                        isCorrectInput = int.TryParse(Console.ReadLine(), out targetMinWeight);
 
-                        if (isCorrectDetail)
+                        if (isCorrectInput)
                         {
-                            Console.WriteLine($"Деталь успешно установлена, вы получили выручку - {_warehouse[numberOfDetail].Price + WorkPay}");
-                            _revenue += _warehouse[numberOfDetail].Price + WorkPay;
-                            _warehouse.RemoveAt(numberOfDetail);
+                            Console.WriteLine("Введите национальность");
+                            targetNationality = Console.ReadLine();
+
+                            var filteredCriminals = _criminals.Where(criminal => criminal.Hieght >= targetMinHeight && criminal.Hieght <= targetMaxHeight && criminal.Weight >= targetMinWeight && criminal.Weight <= targetMaxWeight && criminal.Nationality == targetNationality && criminal.IsConvicted == false);
+
+                            foreach (var criminal in filteredCriminals)
+                            {
+                                criminal.ShowInfo();
+                            }
+
+                            Console.ReadKey();
+                            Console.Clear();
                         }
                         else
                         {
-                            Console.WriteLine($"Вы установили не ту деталь и заплатили штраф - {WrongDetailFine}. Клиент уехал");
-                            PayFine(WrongDetailFine);
-                            _warehouse.RemoveAt(numberOfDetail);
+                            Console.WriteLine("Упс, что-то пошло не так....");
                         }
                     }
                     else
                     {
-                        Console.WriteLine($"Детали с таким номером нет, клиент ушел и вы заплатили штраф {NotServeFine}");
+                        Console.WriteLine("Упс, что-то пошло не так....");
                     }
                 }
                 else
                 {
-                    Console.WriteLine($"Детали с таким номером нет, клиент ушел и вы заплатили штраф {NotServeFine}");
+                    Console.WriteLine("Упс, что-то пошло не так....");
                 }
             }
-        }
-
-        public void ShowWarehouse()
-        {
-            Console.WriteLine("На складе сейчас лежат:\n");
-
-            for (int i = 0; i < _warehouse.Count; i++)
+            else
             {
-                Console.WriteLine($"{i} - {_warehouse[i].Name}");
+                Console.WriteLine("Упс, что-то пошло не так....");
             }
         }
 
-        private void PayFine(int fine)
-        {
-            _revenue -= fine;
-        }
-
-        private void FillWarehouse(IReadOnlyDictionary<string, int> allDetailsType, int numberOfDetails)
+        private void Create(int count)
         {
             Random random = new Random();
 
-            for (int i = 0; i < numberOfDetails; i++)
+            for (int i = 0; i < count; i++)
             {
-                _warehouse.Add(new Detail(allDetailsType, random));
+                _criminals.AddLast(new Criminal(random));
             }
         }
     }
 
-    class Visitor
+    class Criminal
     {
-        public string BrokenDetailName { get; private set; }
+        public string Initials { get; private set; }
+        public string Nationality { get; private set; }
+        public bool IsConvicted { get; private set; }
+        public int Hieght { get; private set; }
+        public int Weight { get; private set; }
 
-        public Visitor(IReadOnlyDictionary<string, int> allDetails)
+        public Criminal(Random random)
         {
-            BrokenDetailName = SetBrokenDetail(allDetails);
+            List<string> names = new List<string> { "Max", "John", "George", "Leon", "Boris", "David" };
+            List<string> nationality = new List<string> { "American", "Englishman", "Frenchman", "German" };
+            List<bool> isConvicted = new List<bool> { true, false };
+            int maxHeight = 200;
+            int minHeight = 140;
+            int maxWeighth = 120;
+            int minWeight = 60;
+
+            Initials = names[random.Next(0, names.Count)];
+            Nationality = nationality[random.Next(0, nationality.Count)];
+            IsConvicted = isConvicted[random.Next(0, isConvicted.Count)];
+            Hieght = random.Next(minHeight, maxHeight);
+            Weight = random.Next(minWeight, maxWeighth);
         }
 
-        public bool CheckDetailCorrectness(string detailName)
+        public void ShowInfo()
         {
-            return BrokenDetailName == detailName;
-        }
-
-        private string SetBrokenDetail(IReadOnlyDictionary<string, int> allDetails)
-        {
-            Random random = new Random();
-            string brokenDetailName;
-
-            return brokenDetailName = allDetails.ElementAt(random.Next(0, allDetails.Count)).Key;
+            Console.WriteLine($"Имя - {Initials}, Национальность - {Nationality}, Осужден - {IsConvicted}, Рост - {Hieght}см, Вес - {Weight}кг");
         }
     }
-
-    class Detail
-    {
-        public int Price { get; private set; }
-        public string Name { get; private set; }
-
-        public Detail(IReadOnlyDictionary<string, int> allDetailsType, Random random)
-        {
-            int detailNumber = random.Next(0, allDetailsType.Count);
-
-            Name = allDetailsType.ElementAt(detailNumber).Key;
-            Price = allDetailsType.ElementAt(detailNumber).Value;
-        }
-    }
-
-
 }
