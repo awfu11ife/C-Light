@@ -4,165 +4,176 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeWork49
+namespace HomeWork50
 {
     class Program
     {
         static void Main(string[] args)
         {
-            GoToZoo();
+            IReadOnlyDictionary<string, int> allDetaisType = new Dictionary<string, int> { { "Двигатель", 300 }, { "Коробка передач", 200 }, { "Тормоза", 100 } };
+
+            StartCarServing(allDetaisType);
         }
 
-        static void GoToZoo()
+        static void StartCarServing(IReadOnlyDictionary<string, int> allDetails)
         {
-            const int Exit = 10;
-            int? userInput = null;
-            bool isCorrectInput;
-            Zoo zoo = new Zoo();
+            const string StopWorkCommand = "stop";
+            string userInput = null;
+            CarService carService = new CarService(allDetails, 20);
 
-            Console.WriteLine("Добро пожаовать в наш зоопарк!\n");
-
-            while (userInput != Exit)
+            while (userInput != StopWorkCommand)
             {
-                zoo.ShowAllAviaries();
-                Console.WriteLine($"{Exit} - уйти из зоопарка");
-                Console.WriteLine("\nВведите номер вольера, к которому хотите подойти");
+                carService.ShowWarehouse();
+                Console.WriteLine($"\nНа вамеи счету сейчас {carService.CurrentRevenue} рублей");
+                Console.WriteLine($"Введите 'Enter', чтобы обслужить следующего клиента, или  {StopWorkCommand}, чтобы завершить рабочий день");
+                userInput = Console.ReadLine();
 
-                isCorrectInput = int.TryParse(Console.ReadLine(), out int number);
-                userInput = number;
-
-                if (isCorrectInput)
+                if (userInput != StopWorkCommand)
                 {
-                    if (userInput != Exit)
-                        zoo.ComeToAviary(number);
-                    else
-                        Console.WriteLine("До новых встреч!");
+                    carService.ServeVisitor(new Visitor(allDetails));
+                    Console.ReadKey();
+                    Console.Clear();
                 }
                 else
                 {
-                    Console.WriteLine("Упс, что-то пошло не так");
+                    Console.Clear();
+                    Console.WriteLine($"День окончен, общая выручка - {carService.CurrentRevenue}");
+                    break;
                 }
             }
         }
     }
 
-    class Zoo
+    class CarService
     {
-        private List<Aviary> _aviaries = new List<Aviary> { new Aviary(10, AnimalType.Львы, AnimalSound.РрРрРррРр), new Aviary(8, AnimalType.Жирафы, AnimalSound.ЗвукиЖирафов), new Aviary(15, AnimalType.Попугаи, AnimalSound.ЧирикЧирик), new Aviary(4, AnimalType.Обезьяны, AnimalSound.КрикОбезьян) };
+        private List<Detail> _warehouse = new List<Detail>();
+        private int _revenue = 0;
 
-        public void ShowAllAviaries()
+        public int CurrentRevenue => _revenue;
+
+        public CarService(IReadOnlyDictionary<string, int> allDetailsType, int numberOfDetails)
         {
-            Console.WriteLine("У нас есть следующие вольеры:\n");
-
-            for (int i = 0; i < _aviaries.Count; i++)
-            {
-                Console.WriteLine($"{i} - В нем сидят {_aviaries[i].AnimalType}");
-            }
+            FillWarehouse(allDetailsType, numberOfDetails);
         }
 
-        public void ComeToAviary(int numberOfAviary)
+        public void ServeVisitor(Visitor visitor)
         {
-            if (numberOfAviary < _aviaries.Count && numberOfAviary >= 0)
+            const string NotServeVisitorCommand = "sorry";
+            const int NotServeFine = 150;
+            const int WrongDetailFine = 300;
+            const int WorkPay = 500;
+            string userInput = null;
+            bool isCorrectInput;
+
+            Console.WriteLine($"У посетителя поломка - {visitor.BrokenDetailName}\n");
+            Console.WriteLine($"Введите номер детали, которую хотите поставить клиенту, либо {NotServeVisitorCommand}, чтобы не обсуживать его");
+
+            userInput = Console.ReadLine();
+
+            if (userInput == NotServeVisitorCommand)
             {
-                _aviaries[numberOfAviary].ShowInfo();
+                Console.WriteLine($"Клиент ушел, вы заплатили штраф {NotServeFine}");
+                PayFine(NotServeFine);
             }
             else
             {
-                Console.WriteLine("Упс, что-то пошло не так");
-            }
+                isCorrectInput = int.TryParse(userInput, out int numberOfDetail);
 
-            Console.ReadKey();
-        }
-    }
-
-    class Aviary
-    {
-        private string _animalSound;
-        private List<Animal> _animals = new List<Animal>();
-
-        public string AnimalType { get; private set; }
-
-        public Aviary(uint numberOfAnimals, Enum animalType, Enum animalSound)
-        {
-            AnimalType = animalType.ToString();
-            _animalSound = animalSound.ToString();
-            Create(numberOfAnimals);
-        }
-
-        public void ShowInfo()
-        {
-            int numberOfMaleIndividuals = 0;
-            int numberOfFemaleIndividuals = 0;
-
-            foreach (var animal in _animals)
-            {
-                if (animal.AnimalGender == Animal.Male)
+                if (isCorrectInput)
                 {
-                    numberOfMaleIndividuals++;
+                    bool isCorrectDetail;
+
+                    if (numberOfDetail >= 0 && numberOfDetail < _warehouse.Count)
+                    {
+                        isCorrectDetail = visitor.CheckDetailCorrectness(_warehouse[numberOfDetail].Name);
+
+                        if (isCorrectDetail)
+                        {
+                            Console.WriteLine($"Деталь успешно установлена, вы получили выручку - {_warehouse[numberOfDetail].Price + WorkPay}");
+                            _revenue += _warehouse[numberOfDetail].Price + WorkPay;
+                            _warehouse.RemoveAt(numberOfDetail);
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Вы установили не ту деталь и заплатили штраф - {WrongDetailFine}. Клиент уехал");
+                            PayFine(WrongDetailFine);
+                            _warehouse.RemoveAt(numberOfDetail);
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Детали с таким номером нет, клиент ушел и вы заплатили штраф {NotServeFine}");
+                    }
                 }
                 else
                 {
-                    numberOfFemaleIndividuals++;
+                    Console.WriteLine($"Детали с таким номером нет, клиент ушел и вы заплатили штраф {NotServeFine}");
                 }
             }
-
-            Console.WriteLine($"В вольере находтся {numberOfMaleIndividuals} особей мужского пола и  {numberOfFemaleIndividuals} особей женского пола, они издают звук {_animalSound}");
         }
 
-        private void Create(uint mumberOfAnimals)
+        public void ShowWarehouse()
+        {
+            Console.WriteLine("На складе сейчас лежат:\n");
+
+            for (int i = 0; i < _warehouse.Count; i++)
+            {
+                Console.WriteLine($"{i} - {_warehouse[i].Name}");
+            }
+        }
+
+        private void PayFine(int fine)
+        {
+            _revenue -= fine;
+        }
+
+        private void FillWarehouse(IReadOnlyDictionary<string, int> allDetailsType, int numberOfDetails)
         {
             Random random = new Random();
 
-            for (uint i = 0; i < mumberOfAnimals; i++)
+            for (int i = 0; i < numberOfDetails; i++)
             {
-                _animals.Add(new Animal(random, AnimalType, _animalSound));
+                _warehouse.Add(new Detail(allDetailsType, random));
             }
         }
     }
 
-    class Animal
+    class Visitor
     {
-        public const string Male = "Мужской";
-        public const string Female = "Женский";
+        public string BrokenDetailName { get; private set; }
 
-        public string AnimalType { get; protected set; }
-        public string AnimalGender { get; protected set; }
-        public string AnimalSound { get; protected set; }
-
-        private List<string> _animalGenderType = new List<string> { Male, Female };
-
-        public Animal(Random random, string animalType, string animalSound)
+        public Visitor(IReadOnlyDictionary<string, int> allDetails)
         {
-            AnimalType = animalType;
-            AnimalSound = animalSound;
-            SetGender(random);
+            BrokenDetailName = SetBrokenDetail(allDetails);
         }
 
-        public void MakeNoise()
+        public bool CheckDetailCorrectness(string detailName)
         {
-            Console.WriteLine(AnimalSound);
+            return BrokenDetailName == detailName;
         }
 
-        private void SetGender(Random random)
+        private string SetBrokenDetail(IReadOnlyDictionary<string, int> allDetails)
         {
-            int numberOfGender = random.Next(0, _animalGenderType.Count);
-            AnimalGender = _animalGenderType[numberOfGender];
+            Random random = new Random();
+            string brokenDetailName;
+
+            return brokenDetailName = allDetails.ElementAt(random.Next(0, allDetails.Count)).Key;
         }
     }
 
-    enum AnimalType
+    class Detail
     {
-        Львы,
-        Жирафы,
-        Попугаи,
-        Обезьяны
+        public int Price { get; private set; }
+        public string Name { get; private set; }
+
+        public Detail(IReadOnlyDictionary<string, int> allDetailsType, Random random)
+        {
+            int detailNumber = random.Next(0, allDetailsType.Count);
+
+            Name = allDetailsType.ElementAt(detailNumber).Key;
+            Price = allDetailsType.ElementAt(detailNumber).Value;
+        }
     }
 
-    enum AnimalSound
-    {
-        РрРрРррРр,
-        ЗвукиЖирафов,
-        ЧирикЧирик,
-        КрикОбезьян
-    }
+
 }
