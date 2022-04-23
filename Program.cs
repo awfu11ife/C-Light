@@ -4,156 +4,90 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeWork51
+namespace HomeWork52
 {
     class Program
     {
         static void Main(string[] args)
         {
-            StartWork();
-        }
+            Prison prison = new Prison(10);
 
-        static void StartWork()
-        {
-            const string ShowAllCriminals = "showall";
-            const string Search = "search";
-            const string ExitCommand = "exit";
-            string userInput = null;
-            DataBase dataBase = new DataBase(20);
-
-            Console.WriteLine("Добро пожаловать в базу данных преступников\n");
-
-            while (userInput != ExitCommand)
-            {
-                Console.WriteLine($"Вам доступны следующие команды\n" +
-                    $"{ShowAllCriminals} - показать всю базу данных\n" +
-                    $"{Search} - найти по параметрам\n" +
-                    $"{ExitCommand} - выйти\n");
-                Console.WriteLine();
-                userInput = Console.ReadLine();
-
-                switch (userInput)
-                {
-                    case ShowAllCriminals:
-                        dataBase.ShowAllCriminals();
-                        break;
-
-                    case Search:
-                        dataBase.ShowCriminalsByParameters();
-                        break;
-
-                    case ExitCommand:
-                        break;
-
-                    default:
-                        Console.WriteLine("Такой команды нет, попробуйте езё раз");
-                        break;
-                }
-            }
+            prison.ShowAllPrisoners();
+            prison.ShowPrisonersAfterAmnesty();
         }
     }
 
-    class DataBase
+    class Prison
     {
-        private LinkedList<Criminal> _criminals = new LinkedList<Criminal>();
+        private List<Prisoner> _prisoners = new List<Prisoner>();
 
-        public DataBase(int count)
+        public Prison(int number)
         {
-            Create(count);
+            Create(number);
         }
 
-        public void ShowAllCriminals()
+        public void ShowAllPrisoners()
         {
-            foreach (var criminal in _criminals)
-            {
-                criminal.ShowInfo();
-            }
+            Console.WriteLine("В тюрьме сейчас сидят:\n");
 
-            Console.ReadKey();
-            Console.Clear();
+            foreach (var prisoner in _prisoners)
+            {
+                prisoner.ShowInfo();
+            }
         }
 
-        public void ShowCriminalsByParameters()
+        public void ShowPrisonersAfterAmnesty()
         {
-            string targetNationality;
-            bool isCorrectInput;
-            List<string> userInput = new List<string>(4);
-            List<int> parsedUserInput = new List<int>();
+            var amnestedPrisoners = _prisoners.Where(prisoner => prisoner.CrimeType == CrimeTypes.Антиправительственное);
+            Console.WriteLine("\nПосле амнистии в тюрьме остались:\n");
 
-            Console.WriteLine("Введите максимальный и минимальный рост, максимальный и минимальный вес");
-
-            for (int i = 0; i < userInput.Capacity; i++)
+            foreach (var prisoner in amnestedPrisoners.ToArray())
             {
-                userInput.Add(Console.ReadLine());
+                _prisoners.Remove(prisoner);
             }
 
-            for (int i = 0; i < userInput.Count; i++)
+            foreach (var prisoner in _prisoners)
             {
-                isCorrectInput = int.TryParse(userInput[i], out int currentParameter);
-
-                if (isCorrectInput)
-                {
-                    parsedUserInput.Add(currentParameter);
-                }
-                else
-                {
-                    Console.WriteLine("Упс, что-то пошло не так....");
-                }
+                prisoner.ShowInfo();
             }
-
-            Console.WriteLine("Введите национальность");
-            targetNationality = Console.ReadLine();
-
-            var filteredCriminals = _criminals.Where(criminal => criminal.Hieght <= parsedUserInput[0] && criminal.Hieght >= parsedUserInput[1] && criminal.Weight <= parsedUserInput[2] && criminal.Weight >= parsedUserInput[3] && criminal.Nationality == targetNationality && criminal.IsConvicted == false);
-
-            foreach (var criminal in filteredCriminals)
-            {
-                criminal.ShowInfo();
-            }
-
-            Console.ReadKey();
-            Console.Clear();
         }
 
-        private void Create(int count)
+        private void Create(int number)
         {
             Random random = new Random();
 
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < number; i++)
             {
-                _criminals.AddLast(new Criminal(random));
+                _prisoners.Add(new Prisoner(random));
             }
         }
     }
 
-    class Criminal
+    class Prisoner
     {
-        public string Initials { get; private set; }
-        public string Nationality { get; private set; }
-        public bool IsConvicted { get; private set; }
-        public int Hieght { get; private set; }
-        public int Weight { get; private set; }
+        public string Name { get; private set; }
+        public CrimeTypes CrimeType { get; private set; }
 
-        public Criminal(Random random)
+        public Prisoner(Random random)
         {
             List<string> names = new List<string> { "Max", "John", "George", "Leon", "Boris", "David" };
-            List<string> nationality = new List<string> { "American", "Englishman", "Frenchman", "German" };
-            List<bool> isConvicted = new List<bool> { true, false };
-            int maxHeight = 200;
-            int minHeight = 140;
-            int maxWeighth = 120;
-            int minWeight = 60;
+            List<CrimeTypes> crimeTypes = new List<CrimeTypes> { CrimeTypes.Антиправительственное, CrimeTypes.Кражу, CrimeTypes.Мошенничество, CrimeTypes.Убийство };
 
-            Initials = names[random.Next(0, names.Count)];
-            Nationality = nationality[random.Next(0, nationality.Count)];
-            IsConvicted = isConvicted[random.Next(0, isConvicted.Count)];
-            Hieght = random.Next(minHeight, maxHeight);
-            Weight = random.Next(minWeight, maxWeighth);
+            Name = names[random.Next(0, names.Count)];
+            CrimeType = crimeTypes[random.Next(0, crimeTypes.Count)];
         }
 
         public void ShowInfo()
         {
-            Console.WriteLine($"Имя - {Initials}, Национальность - {Nationality}, Осужден - {IsConvicted}, Рост - {Hieght}см, Вес - {Weight}кг");
+            Console.WriteLine($"Заключенный по имени {Name} осужден за {CrimeType}");
         }
+    }
+    
+    enum CrimeTypes
+    {
+        Антиправительственное,
+        Кражу,
+        Мошенничество,
+        Убийство
     }
 }
