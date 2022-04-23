@@ -10,10 +10,12 @@ namespace HomeWork52
     {
         static void Main(string[] args)
         {
-            Prison prison = new Prison(10);
+            IReadOnlyList<string> crimeTypes = new List<string> { "Антиправительственное", "Кражу", "Мошенничество", "Убийство" };
+            Prison prison = new Prison(crimeTypes, 10);
 
             prison.ShowAllPrisoners();
-            prison.ShowPrisonersAfterAmnesty();
+            prison.Amnesty(crimeTypes);
+            prison.ShowAllPrisoners();
         }
     }
 
@@ -21,9 +23,9 @@ namespace HomeWork52
     {
         private List<Prisoner> _prisoners = new List<Prisoner>();
 
-        public Prison(int number)
+        public Prison(IReadOnlyList<string> crimeTypes, int number)
         {
-            Create(number);
+            Create(crimeTypes, number);
         }
 
         public void ShowAllPrisoners()
@@ -36,29 +38,34 @@ namespace HomeWork52
             }
         }
 
-        public void ShowPrisonersAfterAmnesty()
+        public void Amnesty(IReadOnlyList<string> crimeTypes)
         {
-            var amnestedPrisoners = _prisoners.Where(prisoner => prisoner.CrimeType == CrimeTypes.Антиправительственное);
-            Console.WriteLine("\nПосле амнистии в тюрьме остались:\n");
+            string amnestyCrimeType = "Антиправительственное";
 
-            foreach (var prisoner in amnestedPrisoners.ToArray())
+            if (crimeTypes.Contains(amnestyCrimeType))
             {
-                _prisoners.Remove(prisoner);
+                var amnestedPrisoners = _prisoners.Where(prisoner => prisoner.CrimeType == amnestyCrimeType);
+
+                foreach (var prisoner in amnestedPrisoners.ToArray())
+                {
+                    _prisoners.Remove(prisoner);
+                }
+
+                Console.WriteLine("\nПроизошла амнистия\n");
             }
-
-            foreach (var prisoner in _prisoners)
+            else
             {
-                prisoner.ShowInfo();
+                Console.WriteLine("Такого приступления нет");
             }
         }
 
-        private void Create(int number)
+        private void Create(IReadOnlyList<string> crimeTypes, int number)
         {
             Random random = new Random();
 
             for (int i = 0; i < number; i++)
             {
-                _prisoners.Add(new Prisoner(random));
+                _prisoners.Add(new Prisoner(crimeTypes, random));
             }
         }
     }
@@ -66,12 +73,11 @@ namespace HomeWork52
     class Prisoner
     {
         public string Name { get; private set; }
-        public CrimeTypes CrimeType { get; private set; }
+        public string CrimeType { get; private set; }
 
-        public Prisoner(Random random)
+        public Prisoner(IReadOnlyList<string> crimeTypes, Random random)
         {
             List<string> names = new List<string> { "Max", "John", "George", "Leon", "Boris", "David" };
-            List<CrimeTypes> crimeTypes = new List<CrimeTypes> { CrimeTypes.Антиправительственное, CrimeTypes.Кражу, CrimeTypes.Мошенничество, CrimeTypes.Убийство };
 
             Name = names[random.Next(0, names.Count)];
             CrimeType = crimeTypes[random.Next(0, crimeTypes.Count)];
@@ -81,13 +87,5 @@ namespace HomeWork52
         {
             Console.WriteLine($"Заключенный по имени {Name} осужден за {CrimeType}");
         }
-    }
-    
-    enum CrimeTypes
-    {
-        Антиправительственное,
-        Кражу,
-        Мошенничество,
-        Убийство
     }
 }
