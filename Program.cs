@@ -4,142 +4,58 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeWork53
+namespace HomeWork54
 {
     class Program
     {
         static void Main(string[] args)
         {
-            IReadOnlyList<string> diseases = new List<string> { "Простуда", "Ангина", "Грипп", "Пневмония" };
-
-            StartWork(diseases, 20);
-        }
-
-        static void StartWork(IReadOnlyList<string> deseases, int numberOfPatients)
-        {
-            const string ShowAll = "showall";
-            const string ShowWithSelectedDisease = "bydisease";
-            const string SortByAge = "byage";
-            const string SortByName = "byname";
-            const string ExitCommand = "exit";
-            string userInput = null;
-            DataBase dataBase = new DataBase(deseases, numberOfPatients);
-
-            Console.WriteLine("Это база данных с вашими пациентами");
-
-            while (userInput != ExitCommand)
-            {
-                Console.WriteLine($"Вам доступны следующие команды:\n" +
-                    $"{ShowAll} - показать всех пациентов\n" +
-                    $"{ShowWithSelectedDisease} - показать всех с выбранной болезнью\n" +
-                    $"{SortByAge} - отсортировать по возрасту\n" +
-                    $"{SortByName} - отсортировать по имени\n" +
-                    $"{ExitCommand} - выйти\n");
-                Console.WriteLine("Введите желаемую команду");
-                userInput = Console.ReadLine();
-
-                switch (userInput)
-                {
-                    case ShowAll:
-                        dataBase.ShowAll();
-                        break;
-
-                    case ShowWithSelectedDisease:
-                        dataBase.ShowWithSelectedDisease();
-                        break;
-
-                    case SortByAge:
-                        dataBase.SortByAge();
-                        break;
-
-                    case SortByName:
-                        dataBase.SortByName();
-                        break;
-
-                    case ExitCommand:
-                        break;
-
-                    default:
-                        Console.WriteLine("Такой команды нет...\n");
-                        break;
-                }
-            }
+            DataBase dataBase = new DataBase(30);
+            dataBase.ShowAllPlayers();
+            dataBase.TopByLevel(3);
+            dataBase.TopByStrenght(3);
         }
     }
 
     class DataBase
     {
-        private List<Patient> _allPatients = new List<Patient>();
-        private List<string> _diseases = new List<string>();
+        private List<Player> _allPlayers = new List<Player>();
 
-        public DataBase(IReadOnlyList<string> diseases, int numberOfPatients)
+        public DataBase(int number)
         {
-            _diseases = (List<string>)diseases;
-            Create(numberOfPatients);
+            Create(number);
         }
 
-        public void ShowAll()
+        public void ShowAllPlayers()
         {
-            Console.WriteLine("Сейчас вы лечите следующих пациентов:\n");
+            Console.WriteLine("В базе данных находятся следующие игроки:\n");
 
-            foreach (var patient in _allPatients)
+            foreach (var player in _allPlayers)
             {
-                patient.ShowInfo();
+                player.ShowInfo();
             }
-
-            Console.ReadKey();
-            Console.Clear();
         }
 
-        public void ShowWithSelectedDisease()
+        public void TopByLevel(int numberOfPlaces)
         {
-            Console.WriteLine("Введите название болезни");
-            string userInput = Console.ReadLine();
+            var topByLevel = _allPlayers.OrderByDescending(player => player.Level).Take(numberOfPlaces);
+            Console.WriteLine($"\nТоп {numberOfPlaces} игрока по уровню\n");
 
-            if (_diseases.Contains(userInput))
+            foreach (var player in topByLevel)
             {
-                var sortedPatients = _allPatients.Where(patient => patient.Disease == userInput);
-
-                foreach (var patient in sortedPatients)
-                {
-                    patient.ShowInfo();
-                }
+                player.ShowInfo();
             }
-            else
-            {
-                Console.WriteLine("Такой болезни нет");
-            }
-
-            Console.ReadKey();
-            Console.Clear();
         }
 
-        public void SortByAge()
+        public void TopByStrenght(int numberOfPlaces)
         {
-            var sortedPatients = _allPatients.OrderBy(player => player.Age);
-            Console.WriteLine("Список, отсортированный по возрасту:\n");
+            var topByStrenght = _allPlayers.OrderByDescending(player => player.Strenght).Take(numberOfPlaces);
+            Console.WriteLine($"\nТоп {numberOfPlaces} игрока по силе\n");
 
-            foreach (var patient in sortedPatients)
+            foreach (var player in topByStrenght)
             {
-                patient.ShowInfo();
+                player.ShowInfo();
             }
-
-            Console.ReadKey();
-            Console.Clear();
-        }
-
-        public void SortByName()
-        {
-            var sortedPatients = _allPatients.OrderBy(player => player.Name);
-            Console.WriteLine("Список, отсортированный по именам:\n");
-
-            foreach (var patient in sortedPatients)
-            {
-                patient.ShowInfo();
-            }
-
-            Console.ReadKey();
-            Console.Clear();
         }
 
         private void Create(int number)
@@ -148,31 +64,33 @@ namespace HomeWork53
 
             for (int i = 0; i < number; i++)
             {
-                _allPatients.Add(new Patient(_diseases, random));
-            }
+                _allPlayers.Add(new Player(random));
+            } 
         }
     }
 
-    class Patient
+    class Player
     {
         public string Name { get; private set; }
-        public string Disease { get; private set; }
-        public int Age { get; private set; }
+        public int Strenght { get; private set; }
+        public int Level { get; private set; }
 
-        public Patient(IReadOnlyList<string> diseases, Random random)
+        public Player(Random random)
         {
             List<string> names = new List<string> { "Max", "John", "George", "Leon", "Boris", "David" };
-            int maxAge = 70;
-            int minAge = 18;
+            int maxStrenght = 500;
+            int minStrenght = 100;
+            int maxLevel = 100;
+            int minLevel = 1;
 
             Name = names[random.Next(0, names.Count)];
-            Disease = diseases[random.Next(0, diseases.Count)];
-            Age = random.Next(minAge, maxAge);
+            Strenght = random.Next(minStrenght, maxStrenght);
+            Level = random.Next(minLevel, maxLevel);
         }
 
         public void ShowInfo()
         {
-            Console.WriteLine($"Пациент по имени {Name}, полных лет - {Age}, заболевание - {Disease}");
+            Console.WriteLine($"У игрока {Name} уровень - {Level} и сила - {Strenght}");
         }
     }
 }
