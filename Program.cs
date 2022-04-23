@@ -14,7 +14,7 @@ namespace HomeWork52
             Prison prison = new Prison(crimeTypes, 10);
 
             prison.ShowAllPrisoners();
-            prison.Amnesty(crimeTypes);
+            prison.Amnesty();
             prison.ShowAllPrisoners();
         }
     }
@@ -22,10 +22,12 @@ namespace HomeWork52
     class Prison
     {
         private List<Prisoner> _prisoners = new List<Prisoner>();
+        private List<string> _crimeTypes = new List<string>();
 
         public Prison(IReadOnlyList<string> crimeTypes, int number)
         {
             Create(crimeTypes, number);
+            _crimeTypes = (List<string>)crimeTypes;
         }
 
         public void ShowAllPrisoners()
@@ -38,19 +40,13 @@ namespace HomeWork52
             }
         }
 
-        public void Amnesty(IReadOnlyList<string> crimeTypes)
+        public void Amnesty()
         {
             string amnestyCrimeType = "Антиправительственное";
 
-            if (crimeTypes.Contains(amnestyCrimeType))
+            if (_crimeTypes.Contains(amnestyCrimeType))
             {
-                var amnestedPrisoners = _prisoners.Where(prisoner => prisoner.CrimeType == amnestyCrimeType);
-
-                foreach (var prisoner in amnestedPrisoners.ToArray())
-                {
-                    _prisoners.Remove(prisoner);
-                }
-
+                _prisoners = _prisoners.Where(prisoner => prisoner.CrimeType != amnestyCrimeType).ToList();
                 Console.WriteLine("\nПроизошла амнистия\n");
             }
             else
