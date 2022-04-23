@@ -26,8 +26,8 @@ namespace HomeWork52
 
         public Prison(IReadOnlyList<string> crimeTypes, int number)
         {
-            Create(crimeTypes, number);
             _crimeTypes = (List<string>)crimeTypes;
+            Create(number);
         }
 
         public void ShowAllPrisoners()
@@ -55,13 +55,13 @@ namespace HomeWork52
             }
         }
 
-        private void Create(IReadOnlyList<string> crimeTypes, int number)
+        private void Create(int number)
         {
             Random random = new Random();
 
             for (int i = 0; i < number; i++)
             {
-                _prisoners.Add(new Prisoner(crimeTypes, random));
+                _prisoners.Add(new Prisoner(_crimeTypes, random));
             }
         }
     }
