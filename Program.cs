@@ -4,82 +4,84 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeWork55
+namespace HomeWork56
 {
     class Program
     {
         static void Main(string[] args)
         {
-            Warehouse warehouse = new Warehouse(30);
-            warehouse.ShowAllStews();
-            warehouse.ShowExpiredStews();
+            Platoon platoon = new Platoon(20);
+
+            platoon.ShowAllSoldiers();
+            platoon.ShowSoldiersParameters();
         }
     }
 
-    class Warehouse
+    class Platoon
     {
-        private int _currentYear = 2022;
-        private List<Stew> _stews = new List<Stew>();
+        private List<Soldier> _soldiers = new List<Soldier>();
 
-        public Warehouse(int number)
+        public Platoon(int number)
         {
-            Fill(number);
+            Create(number);
         }
 
-        public void ShowExpiredStews()
+        public void ShowAllSoldiers()
         {
-            var expiredStews = _stews.Where(stew => _currentYear - stew.ProductYear > stew.ExpirationDate);
-            Console.WriteLine("\nИз них просрочены:\n");
+            Console.WriteLine("Все солдаты:\n");
 
-            foreach (var stew in expiredStews)
+            foreach (var soldier in _soldiers)
             {
-                stew.ShowInfo();
+                soldier.ShowInfo();
             }
         }
 
-        public void ShowAllStews()
+        public void ShowSoldiersParameters()
         {
-            Console.WriteLine("В хранилище сейчас находятся:\n");
+            var soldiersParameters = _soldiers.Select(soldier => new { Name = soldier.Name, Rank = soldier.Rank });
+            Console.WriteLine("\nПараметры солдат:\n");
 
-            foreach (var stew in _stews)
+            foreach (var soldier in soldiersParameters)
             {
-                stew.ShowInfo();
+                Console.WriteLine($"Солдат {soldier.Name} имеет звание {soldier.Rank}");
             }
         }
 
-        private void Fill(int number)
+        private void Create(int number)
         {
             Random random = new Random();
 
             for (int i = 0; i < number; i++)
             {
-                _stews.Add(new Stew(random));
+                _soldiers.Add(new Soldier(random));
             }
         }
     }
 
-    class Stew
+    class Soldier
     {
         public string Name { get; private set; }
-        public int ProductYear { get; private set; }
-        public int ExpirationDate { get; private set; }
+        public string Ammunition { get; private set; }
+        public string Rank { get; private set; }
+        public int ServiceTerm { get; private set; }
 
-        public Stew(Random random)
+        public Soldier(Random random)
         {
-            List<string> names = new List<string> { "Свинина", "Говядина", "Индейка", "Куриуа" };
-            int minProductYear = 2017;
-            int maxProductYear = 2020;
-            int minExpirationDate = 3;
-            int maxExpirationDate = 6;
+            List<string> names = new List<string> { "Max", "John", "George", "Leon", "Boris", "David" };
+            List<string> ammunition = new List<string> { "AKM", "M249", "M416", "MP5" };
+            List<string> ranks = new List<string> { "Рядовой", "Лейтенант", "Майор", "Полковник" };
+            int maxServiceTerm = 48;
+            int minServiceTerm = 4;
 
             Name = names[random.Next(0, names.Count)];
-            ProductYear = random.Next(minProductYear, maxProductYear);
-            ExpirationDate = random.Next(minExpirationDate, maxExpirationDate);
+            Ammunition = ammunition[random.Next(0, ammunition.Count)];
+            Rank = ranks[random.Next(0, ranks.Count)];
+            ServiceTerm = random.Next(minServiceTerm, maxServiceTerm);
         }
 
         public void ShowInfo()
         {
-            Console.WriteLine($"Тушенка со квусом {Name}, произведена в {ProductYear} году, срок годности {ExpirationDate} года");
+            Console.WriteLine($"Служащий по имени {Name} из вооружения имеет {Ammunition}, дослужился до звания {Rank} за {ServiceTerm} месяцев службы");
         }
     }
 }
