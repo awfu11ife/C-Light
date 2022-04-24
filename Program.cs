@@ -4,93 +4,82 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeWork54
+namespace HomeWork55
 {
     class Program
     {
         static void Main(string[] args)
         {
-            DataBase dataBase = new DataBase(30);
-            dataBase.ShowAllPlayers();
-            dataBase.TopByLevel(3);
-            dataBase.TopByStrenght(3);
+            Warehouse warehouse = new Warehouse(30);
+            warehouse.ShowAllStews();
+            warehouse.ShowExpiredStews();
         }
     }
 
-    class DataBase
+    class Warehouse
     {
-        private List<Player> _allPlayers = new List<Player>();
+        private int _currentYear = 2022;
+        private List<Stew> _stews = new List<Stew>();
 
-        public DataBase(int number)
+        public Warehouse(int number)
         {
-            Create(number);
+            Fill(number);
         }
 
-        public void ShowAllPlayers()
+        public void ShowExpiredStews()
         {
-            Console.WriteLine("В базе данных находятся следующие игроки:\n");
+            var expiredStews = _stews.Where(stew => _currentYear - stew.ProductYear > stew.ExpirationDate);
+            Console.WriteLine("\nИз них просрочены:\n");
 
-            foreach (var player in _allPlayers)
+            foreach (var stew in expiredStews)
             {
-                player.ShowInfo();
+                stew.ShowInfo();
             }
         }
 
-        public void TopByLevel(int numberOfPlaces)
+        public void ShowAllStews()
         {
-            var topByLevel = _allPlayers.OrderByDescending(player => player.Level).Take(numberOfPlaces);
-            Console.WriteLine($"\nТоп {numberOfPlaces} игрока по уровню\n");
+            Console.WriteLine("В хранилище сейчас находятся:\n");
 
-            foreach (var player in topByLevel)
+            foreach (var stew in _stews)
             {
-                player.ShowInfo();
+                stew.ShowInfo();
             }
         }
 
-        public void TopByStrenght(int numberOfPlaces)
-        {
-            var topByStrenght = _allPlayers.OrderByDescending(player => player.Strenght).Take(numberOfPlaces);
-            Console.WriteLine($"\nТоп {numberOfPlaces} игрока по силе\n");
-
-            foreach (var player in topByStrenght)
-            {
-                player.ShowInfo();
-            }
-        }
-
-        private void Create(int number)
+        private void Fill(int number)
         {
             Random random = new Random();
 
             for (int i = 0; i < number; i++)
             {
-                _allPlayers.Add(new Player(random));
-            } 
+                _stews.Add(new Stew(random));
+            }
         }
     }
 
-    class Player
+    class Stew
     {
         public string Name { get; private set; }
-        public int Strenght { get; private set; }
-        public int Level { get; private set; }
+        public int ProductYear { get; private set; }
+        public int ExpirationDate { get; private set; }
 
-        public Player(Random random)
+        public Stew(Random random)
         {
-            List<string> names = new List<string> { "Max", "John", "George", "Leon", "Boris", "David" };
-            int maxStrenght = 500;
-            int minStrenght = 100;
-            int maxLevel = 100;
-            int minLevel = 1;
+            List<string> names = new List<string> { "Свинина", "Говядина", "Индейка", "Куриуа" };
+            int minProductYear = 2017;
+            int maxProductYear = 2020;
+            int minExpirationDate = 3;
+            int maxExpirationDate = 6;
 
             Name = names[random.Next(0, names.Count)];
-            Strenght = random.Next(minStrenght, maxStrenght);
-            Level = random.Next(minLevel, maxLevel);
+            ProductYear = random.Next(minProductYear, maxProductYear);
+            ExpirationDate = random.Next(minExpirationDate, maxExpirationDate);
         }
 
         public void ShowInfo()
         {
-            Console.WriteLine($"У игрока {Name} уровень - {Level} и сила - {Strenght}");
+            Console.WriteLine($"Тушенка со квусом {Name}, произведена в {ProductYear} году, срок годности {ExpirationDate} года");
         }
     }
 }
